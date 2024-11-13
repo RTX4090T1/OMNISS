@@ -5,6 +5,13 @@ import RegComponent from "@/components/RegComponent.vue";
 import store from '@/store'
 import AccauntComponent from "@/components/AccauntComponent.vue";
 import AddAppComponent from "@/components/AddAppComponent.vue";
+import FavoritesComponent from "@/components/FavoritesComponent.vue";
+import MyAddsComponent from "@/components/MyAddsComponent.vue";
+import ProductCardComponent from "@/components/ProductCardComponent.vue";
+import PaymentComponent from "@/components/PaymentComponent.vue";
+import MyOrdersComponent from "@/components/MyOrdersComponent.vue";
+import MySalesComponent from "@/components/MySalesComponent.vue";
+import RedactAddsComponent from "@/components/RedactAddsComponent.vue";
 
 const routes = [
   {
@@ -32,6 +39,41 @@ const routes = [
     name:"addApplication",
     component:AddAppComponent
   },
+  {
+    path: "/favorites",
+    name: "favorites",
+    component: FavoritesComponent
+  },
+  {
+    path: "/myAdds",
+    name: "myAdds",
+    component: MyAddsComponent
+  },
+  {
+    path: "/prodCard",
+    name: "prodCard",
+    component: ProductCardComponent
+  },
+  {
+    path: "/pay",
+    name: "pay",
+    component: PaymentComponent
+  },
+  {
+    path: "/ord",
+    name: "ord",
+    component: MyOrdersComponent
+  },
+  {
+    path: "/sale",
+    name: "sale",
+    component: MySalesComponent
+  },
+  {
+    path: "/redact",
+    name: "redact",
+    component: RedactAddsComponent
+  }
 
 
 ];

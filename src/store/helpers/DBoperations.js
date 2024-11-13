@@ -1,65 +1,90 @@
-import {db,storage } from '@/firebase-config.js'
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { doc, collection, getDocs, addDoc, deleteDoc, updateDoc, query, where } from 'firebase/firestore/lite'	
+import { db } from '@/firebase-config.js';
+import { doc, collection, getDocs, getDoc, deleteDoc, updateDoc, query, where, arrayUnion } from 'firebase/firestore/lite';
 
-class FDBOperation{
-    constructor(){
-        this.dbCollection = collection(db, 'todo')
-    }
-    snapShotToList(snapShot){
-        const snapList = []
-        snapShot.docs.forEach(doc => {
-            snapList.push({
-                id: doc.id,
-                ...doc.data()
-            })
-        });
-        return snapList
-    }
-    dbSnapshot(){
-        return new Promise((resolve, reject) => {getDocs(this.dbCollection)
-            .then((dataSnapshot) => {resolve(this.snapShotToList(dataSnapshot))})
-            .catch((error)=>{reject(error)})})
-    }
-    async uploadImage(file) {
-        const storageRef = ref(storage, `images/${file.name}`);
-        try {
-          await uploadBytes(storageRef, file);
-          const downloadURL = await getDownloadURL(storageRef);
-          return downloadURL; 
-        } catch (error) {
-          throw new Error("Error uploading image: " + error.message);
-        }
-      }
-      async dbAddItem(item, images) {
-        try {
-          const imageURLs = await Promise.all(images.map((file) => this.uploadImage(file)));
-          const itemWithImages = { ...item, images: imageURLs }; 
-          await addDoc(this.dbCollection, itemWithImages);
-          return true;
-        } catch (error) {
-          throw new Error("Error adding item: " + error.message);
-        }
-      }
-    dbDeleteItem(id){
+class FDBOperation {
+  constructor(coll) {
+    this.dbCollection = collection(db, coll);
+  }
 
-        return new Promise((resolve, reject)=>{deleteDoc(doc(this.dbCollection,id))
-            .then(()=>{resolve(true)})
-            .catch((error)=>{reject(error)})})
+  snapShotToList(snapShot) {
+    const snapList = [];
+    snapShot.docs.forEach(doc => {
+      const data = doc.data();
+      console.log('Document Data:', data); // Check the structure of each document
+      if (Array.isArray(data.allAds)) {
+        snapList.push(...data.allAds.map(item => ({ id: doc.id, ...item })));
+      } else {
+        snapList.push({ id: doc.id, ...data });
+      }
+    });
+    return snapList;
+  }
+
+  async dbSnapshot() {
+    try {
+      const dataSnapshot = await getDocs(this.dbCollection);
+      const list = this.snapShotToList(dataSnapshot);
+      console.log('Fetched List:', list);
+      return list;
+    } catch (error) {
+      throw new Error("Error fetching data: " + error.message);
     }
-    dbUpdate(itemId,data){
-        const oldItem = doc(this.dbCollection, itemId)
-        return new Promise((resolve, reject)=>{
-            updateDoc(oldItem,data)
-            .then(()=>{resolve(true)})
-            .catch((error)=>{reject(error)})
-        })
+  }
+
+  async dbAddItem(item) {
+    try {
+      const docRef = doc(this.dbCollection, 'AHZWnRmOg9CQtYZmf2bA'); // Replace 'YOUR_DOCUMENT_ID' with your actual document ID
+      await updateDoc(docRef, {
+        allAds: arrayUnion(item) // This assumes you have an array field named 'itemsArray' in your document
+      });
+      return docRef.id; 
+    } catch (error) {
+      throw new Error("Error adding item: " + error.message);
     }
-    dbLoadFromRequest(fieldTitle,compareOperator,request){
-        const compared = query(this.dbCollection,where(fieldTitle,compareOperator,request))
-        return new Promise((resolve, reject)=>{getDocs(compared)
-            .then((dataSnapshot)=>{resolve(this.snapShotToList(dataSnapshot))})
-            .catch((error)=>reject(error))})
+  }
+
+  dbDeleteItem(id) {
+    return new Promise((resolve, reject) => {
+      deleteDoc(doc(this.dbCollection, id))
+        .then(() => { resolve(true); })
+        .catch((error) => { reject(error); });
+    });
+  }
+  async dbUpdateItemInArray(docId, itemId, updatedData) {
+    try {
+      const docRef = doc(this.dbCollection, docId);
+      const docSnapshot = await getDoc(docRef);
+      if (docSnapshot.exists()) {
+        const docData = docSnapshot.data();
+        const updatedArray = docData.allAds.map(item => 
+          item.id === itemId ? { ...item, ...updatedData } : item
+        );
+        await updateDoc(docRef, { allAds: updatedArray });
+      } else {
+        throw new Error("Document does not exist");
+      }
+    } catch (error) {
+      throw new Error("Error updating item in array: " + error.message);
     }
+  }
+
+  dbUpdate(itemId, data) {
+    const oldItem = doc(this.dbCollection, itemId);
+    return new Promise((resolve, reject) => {
+      updateDoc(oldItem, data)
+        .then(() => { resolve(true); })
+        .catch((error) => { reject(error); });
+    });
+  }
+
+  dbLoadFromRequest(fieldTitle, compareOperator, request) {
+    const compared = query(this.dbCollection, where(fieldTitle, compareOperator, request));
+    return new Promise((resolve, reject) => {
+      getDocs(compared)
+        .then((dataSnapshot) => { resolve(this.snapShotToList(dataSnapshot)); })
+        .catch((error) => { reject(error); });
+    });
+  }
 }
-export default FDBOperation
+
+export default FDBOperation;

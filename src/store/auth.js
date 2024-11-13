@@ -27,6 +27,8 @@ export default {
   },
   mutations: {
     setUser(state, user) {
+      console.log(user);
+      
       state.activeUser = user;
     },
     setError(state, error) {
@@ -60,6 +62,7 @@ export default {
     async saveToLocalStorage(loginData) {
       const credentials = GoogleAuthProvider.credentialFromResult(loginData);
       if (credentials) {
+        console.log(credentials)
         localStorage.setItem('cred', JSON.stringify(credentials));
       }
     },

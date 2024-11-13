@@ -2,7 +2,7 @@
   <div class="mainBackColor text-white min-vh-100">
     <header class="mainheader">
       <div class="container d-flex justify-content-center align-items-center" style="height: 50px;">
-        <h1 class="text-white me-3">Publish ad</h1>
+        <h1 class="text-white me-3">Edit Ad</h1>
         <span class="ms-auto text-white position-absolute start-0 ms-5">
           <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle bg-transparent" style="border-color: transparent"
@@ -15,8 +15,7 @@
               </li>
               <li><a class="dropdown-item" href="#">Support</a></li>
               <li v-if="getUserEmail" @click="signOut"><a class="dropdown-item" href="#">Sign Out</a></li>
-              <li v-if="!getUserEmail"><a class="dropdown-item" href="#"><router-link to="/login">Sign In / Log
-                    In</router-link></a></li>
+              <li v-if="!getUserEmail"><a class="dropdown-item" href="#"><router-link to="/login">Sign In / Log In</router-link></a></li>
               <li><a class="dropdown-item" href="#"><router-link to="/">Home</router-link></a></li>
             </ul>
           </div>
@@ -25,7 +24,7 @@
     </header>
 
     <div class="container mt-5">
-      <form @submit.prevent="publishProduct" class="card p-4 shadow-sm">
+      <form @submit.prevent="handleEdit" class="card p-4 shadow-sm">
         <div class="mb-3">
           <label for="productName" class="form-label">Product Name</label>
           <input type="text" class="form-control" id="productName" v-model="ad.productName" required />
@@ -44,11 +43,6 @@
         <div class="mb-3">
           <label for="pnumber" class="form-label">Use your phone number or email to contact with clients</label>
           <input type="text" class="form-control" id="pnumber" v-model="ad.phoneNumber" required />
-        </div>
-
-        <div class="mb-3">
-          <label for="images" class="form-label">Upload Images (1-8 images)</label>
-          <input type="file" class="form-control" id="images" @change="uploadImage" multiple accept="image/*" />
         </div>
 
         <!-- Price Condition Radio Buttons -->
@@ -103,111 +97,59 @@
           </select>
         </div>
 
-        <div v-if="ad.images.length > 0" id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
-          <div class="carousel-inner">
-            <div class="carousel-item" v-for="(image, index) in ad.images" :key="index"
-              :class="{ active: index === 0 }">
-              <img :src="image" class="d-block w-100" alt="Uploaded Image">
-            </div>
-          </div>
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
-            data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
-            data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
+        <!-- Photo Upload Input -->
+        <div class="mb-3">
+          <label for="photoUpload" class="form-label">Upload Photos</label>
+          <input type="file" class="form-control" id="photoUpload" @change="handleFileUpload" multiple />
         </div>
 
-
-        <button type="submit" class="btn btn-primary mt-3 w-100">Publish</button>
+        <button type="submit" class="btn btn-success mt-3 w-100">Confirm Changes</button>
       </form>
     </div>
   </div>
 </template>
-
+  
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { getFirestore, doc, updateDoc, arrayUnion } from "firebase/firestore";
 
 export default {
-  name: "AddAppComponent",
+  name: "RedactAddsComponent",
   data() {
     return {
-      error: null,
       ad: {
-        category: "",
-        state: "",
         productName: "",
         price: null,
-        condition: "",
-        priceCondition: "",
         description: "",
         phoneNumber: null,
-        location: "",
         images: [],
+        priceCondition: "",
+        condition: "",
+        category: "",
+        location: "",
         city: "",
-        photoUrls: []
+        photos: [] // New field for photo URLs
       },
-      filteredCities: [],
-      ids: null
+      filteredCities: []
     };
   },
   computed: {
-    ...mapGetters(["getCategories", "getLocation"]),
-    ...mapGetters('auth', ['getUserName', 'getUserEmail'])
+    ...mapGetters(["getCategories", "getLocation", 'getToRedact']),
+    ...mapGetters('auth', ['getUserName', 'getUserEmail', 'setRedact'])
   },
   methods: {
-    ...mapActions('todo', ['addItem']),
-    updateCities() {
-      const selectedOblast = this.getLocation.find(location => location.oblast === this.ad.location);
-      this.filteredCities = selectedOblast ? selectedOblast.cities : [];
-    },
-    generateRandomId() {
-      var length = 10;
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      let result = '';
-      const charactersLength = characters.length;
-      for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      }
-      return result;
-    },
-    async publishProduct() {
-      var ids = this.generateRandomId();
-      try {
-        await this.addItem(
-          {
-            productName: this.ad.productName,
-            price: this.ad.price,
-            description: this.ad.description,
-            photoUrls: this.ad.photoUrls,
-            phoneNumber: this.ad.phoneNumber,
-            publisher: this.getUserName,
-            city: this.ad.city,
-            region: this.ad.location,
-            category: this.ad.category,
-            condition: this.ad.condition,
-            priceCondition: this.ad.priceCondition,
-            id: ids,
-            email: this.getUserEmail,
-          },
-        );
-        this.addToMyAdds(ids);
-      }
-      catch {
-        this.error = "An error occurred while processing your request. We are solving your issue.";
-      }
-    },
-    async addToMyAdds(ids) {
-      ids = ids.toString();
-      const db = getFirestore();
-      const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-      await updateDoc(docRef, {
-        selfAdds: arrayUnion({
+  ...mapActions('todo', ['updateItemInArray']),
+  updateCities() {
+    const selectedOblast = this.getLocation.find(location => location.oblast === this.ad.location);
+    this.filteredCities = selectedOblast ? selectedOblast.cities : [];
+  },
+  async handleEdit() {
+    var docId = 'AHZWnRmOg9CQtYZmf2bA';  // Replace with your actual document ID
+    var itemId = this.getToRedact;
+    try {
+      await this.updateItemInArray({
+        docId: docId,
+        itemId: itemId,
+        data: {
           productName: this.ad.productName,
           price: this.ad.price,
           description: this.ad.description,
@@ -219,35 +161,32 @@ export default {
           condition: this.ad.condition,
           priceCondition: this.ad.priceCondition,
           email: this.getUserEmail,
-          id: ids,
-          photoUrls: this.ad.photoUrls
-        }),
+          photos: this.ad.photos // Include photos field in the update
+        }
       });
       this.$router.push('/account');
-    },
-    async uploadImage(event) {
-      const files = event.target.files;
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const formData = new FormData();
-        formData.append('image', file);
+    } catch (error) {
+      console.error("An error occurred while processing your request:", error);
+    }
+  },
+  handleFileUpload(event) {
+    const files = event.target.files;
+    const fileArray = Array.from(files);
+    const photoUrls = [];
 
-        try {
-          const response = await fetch('https://api.imgbb.com/1/upload?key=ac0d9207d7ff1b4cdc79bae575943ac6', {
-            method: 'POST',
-            body: formData,
-          });
-          const data = await response.json();
-          this.ad.images.push(data.data.url);
-          this.ad.photoUrls.push(data.data.url);
-        } catch (error) {
-          console.error('Error uploading image:', error);
-        }
-      }
-    },
+    fileArray.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        photoUrls.push(e.target.result);
+        this.ad.photos = photoUrls;
+      };
+      reader.readAsDataURL(file);
+    });
   }
+}
 };
 </script>
+  
 <style scoped>
 .mainheader {
   background-color: rgb(46, 82, 124);

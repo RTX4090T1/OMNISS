@@ -1,21 +1,48 @@
 import FDBOperation from './helpers/DBoperations';
-const collectionDB = new FDBOperation('todo', 'YOUR_DOCUMENT_ID'); // Specify the document ID
+const collectionDB = new FDBOperation('userProperty');
 
 export default {
   namespaced: true,
   state: {
-    itemList: [],
+    liked:[],
+    userAdds:[],
+    sold:[],
+    bought:[],
     loading: false,
     error: null,
   },
   getters: {
-    getProductList: (state) => state.itemList,
-    getLoading: (state) => state.loading,
-    getError: (state) => state.error,
+    getLiked: (state) => {
+      return state.liked;
+    },
+    getSold: (state) => {
+        return state.sold;
+    },
+    getBought: (state) => {
+        return state.bought;
+    },
+    getUserAdds: (state) => {
+        return state.userAdds;
+    },
+    getLoading: (state) => {
+      return state.loading;
+    },
+    getError: (state) => {
+      return state.error;
+    },
   },
   mutations: {
-    setItem(state, objectLIST) {
-      state.itemList = objectLIST;
+    setLiked(state, objectLIST) {
+      state.liked = objectLIST;
+    },
+    setBought(state, objectLIST) {
+        state.bought = objectLIST;
+      },
+    setSold(state, objectLIST) {
+        state.sold = objectLIST;
+    },
+    setUserAdds(state, objectLIST) {
+        state.userAdds = objectLIST;
     },
     setError(state, error) {
       state.error = error;
@@ -23,6 +50,7 @@ export default {
     setLoading(state, load) {
       state.loading = load;
     },
+
   },
   actions: {
     async loadList({ commit }) {
@@ -30,11 +58,8 @@ export default {
       commit('setLoading', true);
       try {
         const list = await collectionDB.dbSnapshot();
-        if (Array.isArray(list)) {
-          commit('setItem', list);
-        } else {
-          console.error("Expected an array but got:", list);
-        }
+        console.log(list);
+        commit('setItem', list);
       } catch (error) {
         commit('setError', error);
       } finally {
@@ -48,6 +73,7 @@ export default {
         await collectionDB.dbAddItem(item);
         dispatch('loadList');
       } catch (error) {
+        console.log(error);
         commit('setError', error);
       } finally {
         commit('setLoading', false);
@@ -70,18 +96,6 @@ export default {
       commit('setLoading', true);
       try {
         await collectionDB.dbUpdate(itemId, data);
-        dispatch('loadList');
-      } catch (error) {
-        commit('setError', error);
-      } finally {
-        commit('setLoading', false);
-      }
-    },
-    async updateItemInArray({ commit, dispatch }, { docId, itemId, data }) {
-      commit('setError', null);
-      commit('setLoading', true);
-      try {
-        await collectionDB.dbUpdateItemInArray(docId, itemId, data);
         dispatch('loadList');
       } catch (error) {
         commit('setError', error);

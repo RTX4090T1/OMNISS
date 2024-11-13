@@ -39,126 +39,243 @@
         </span>
       </div>
     </header>
-    <div class="links d-flex justify-content-center align-items-center fw-bold">
-      <div class="nav nav-tabs" id="nav-tab">
-        <button class="nav-link bg-transparent" id="omnis" data-bs-toggle="tab" data-bs-target="#nav-omnis"
-          type="button" aria-controls="nav-omnis">Omnis</button>
-        <button class="nav-link bg-transparent" id="estate" data-bs-toggle="tab" data-bs-target="#nav-estate"
-          type="button" aria-controls="nav-estate">Real Estate</button>
-        <button class="nav-link bg-transparent" id="automobile" data-bs-toggle="tab" data-bs-target="#nav-automobile"
-          type="button" aria-controls="nav-automobile">Automobile</button>
-        <button class="nav-link bg-transparent" id="autoparts" data-bs-toggle="tab" data-bs-target="#nav-autoparts"
-          type="button" aria-controls="nav-autoparts">Auto Parts</button>
-        <button class="nav-link bg-transparent" id="home" data-bs-toggle="tab" data-bs-target="#nav-home" type="button"
-          aria-controls="nav-home">Home & Garden</button>
-        <button class="nav-link bg-transparent" id="electronics" data-bs-toggle="tab" data-bs-target="#nav-electronics"
-          type="button" aria-controls="nav-electronics">Electronics</button>
-        <button class="nav-link bg-transparent" id="baby" data-bs-toggle="tab" data-bs-target="#nav-baby" type="button"
-          aria-controls="nav-baby">Baby & Kids</button>
-        <button class="nav-link bg-transparent" id="education" data-bs-toggle="tab" data-bs-target="#nav-education"
-          type="button" aria-controls="nav-education">Education</button>
-        <button class="nav-link bg-transparent" id="sport" data-bs-toggle="tab" data-bs-target="#nav-sport"
-          type="button" aria-controls="nav-sport">Sport</button>
-        <button class="nav-link bg-transparent" id="clothing" data-bs-toggle="tab" data-bs-target="#nav-clothing"
-          type="button" aria-controls="nav-clothing">Clothing</button>
-        <button class="nav-link bg-transparent" id="jev" data-bs-toggle="tab" data-bs-target="#nav-jev" type="button"
-          aria-controls="nav-jev">Jevelry</button>
-        <button class="nav-link bg-transparent" id="col" data-bs-toggle="tab" data-bs-target="#nav-col" type="button"
-          aria-controls="nav-col">Antiques</button>
-        <button class="nav-link bg-transparent" id="hardware" data-bs-toggle="tab" data-bs-target="#nav-hardware"
-          type="button" aria-controls="nav-hardware">Hardware</button>
-        <button class="nav-link bg-transparent" id="services" data-bs-toggle="tab" data-bs-target="#nav-services"
-          type="button" aria-controls="nav-services">Services</button>
-        <button class="nav-link bg-transparent" id="trading" data-bs-toggle="tab" data-bs-target="#nav-trading"
-          type="button" aria-controls="nav-trading">Trading</button>
-      </div>
+    <div class="nav nav-tabs links d-flex justify-content-center align-items-center fw-bold" id="nav-tab">
+      <button class="nav-link bg-transparent" id="omnis" data-bs-toggle="tab" data-bs-target="#nav-omnis" type="button"
+        aria-controls="nav-omnis" @click="setCategory('Omnis')">Omnis</button>
+      <button class="nav-link bg-transparent" id="estate" data-bs-toggle="tab" data-bs-target="#nav-estate"
+        type="button" aria-controls="nav-estate" @click="setCategory('Real Estate')">Real Estate</button>
+      <button class="nav-link bg-transparent" id="automobile" data-bs-toggle="tab" data-bs-target="#nav-automobile"
+        type="button" aria-controls="nav-automobile" @click="setCategory('Automobile')">Automobile</button>
+      <button class="nav-link bg-transparent" id="autoparts" data-bs-toggle="tab" data-bs-target="#nav-autoparts"
+        type="button" aria-controls="nav-autoparts" @click="setCategory('Auto Parts')">Auto Parts</button>
+      <button class="nav-link bg-transparent" id="home" data-bs-toggle="tab" data-bs-target="#nav-home" type="button"
+        aria-controls="nav-home" @click="setCategory('Home & Garden')">Home & Garden</button>
+      <button class="nav-link bg-transparent" id="electronics" data-bs-toggle="tab" data-bs-target="#nav-electronics"
+        type="button" aria-controls="nav-electronics" @click="setCategory('Electronics')">Electronics</button>
+      <button class="nav-link bg-transparent" id="baby" data-bs-toggle="tab" data-bs-target="#nav-baby" type="button"
+        aria-controls="nav-baby" @click="setCategory('Baby & Kids')">Baby & Kids</button>
+      <button class="nav-link bg-transparent" id="education" data-bs-toggle="tab" data-bs-target="#nav-education"
+        type="button" aria-controls="nav-education" @click="setCategory('Education')">Education</button>
+      <button class="nav-link bg-transparent" id="sport" data-bs-toggle="tab" data-bs-target="#nav-sport" type="button"
+        aria-controls="nav-sport" @click="setCategory('Sport')">Sport</button>
+      <button class="nav-link bg-transparent" id="clothing" data-bs-toggle="tab" data-bs-target="#nav-clothing"
+        type="button" aria-controls="nav-clothing" @click="setCategory('Clothing')">Clothing</button>
+      <button class="nav-link bg-transparent" id="jev" data-bs-toggle="tab" data-bs-target="#nav-jev" type="button"
+        aria-controls="nav-jev" @click="setCategory('Jewelry')">Jewelry</button>
+      <button class="nav-link bg-transparent" id="col" data-bs-toggle="tab" data-bs-target="#nav-col" type="button"
+        aria-controls="nav-col" @click="setCategory('Antiques')">Antiques</button>
+      <button class="nav-link bg-transparent" id="hardware" data-bs-toggle="tab" data-bs-target="#nav-hardware"
+        type="button" aria-controls="nav-hardware" @click="setCategory('Hardware')">Hardware</button>
+      <button class="nav-link bg-transparent" id="services" data-bs-toggle="tab" data-bs-target="#nav-services"
+        type="button" aria-controls="nav-services" @click="setCategory('Services')">Services</button>
+      <button class="nav-link bg-transparent" id="trading" data-bs-toggle="tab" data-bs-target="#nav-trading"
+        type="button" aria-controls="nav-trading" @click="setCategory('Trading')">Trading</button>
     </div>
 
 
     <div class="searchInput d-flex justify-content-center align-items-center  position-relative my-3">
-      <h3 class="  position-absolute start-0" style="color:rgb(46, 82, 124);margin-left: 60px;">Filters</h3>
       <form label-for="search" label="Find">
         <input type="text" id="search" v-model="searchString" placeholder="Omnis..."
           class="form-control bg-transparent border border-dark" style="border-width: 1px; width: 500px;">
       </form>
     </div>
-    <div class=" d-flex  ">
-  
-  <!-- First scrollable menu on the side -->
-  <div class="optionsContainer  d-flex flex-column align-items-start">
-    <div class="container position-relative scrollable-menu" 
-         style="width: 200px; background-color: rgb(46, 82, 124); border-color: transparent; min-height: 670px; border-radius: 5px;">
-      
-      <button class="btn btn-primary bg-transparent text-dark" 
-              style="border-color: transparent;" type="button"
-              data-bs-toggle="collapse" data-bs-target="#category1" aria-expanded="false" aria-controls="category1">
-        Categories
-      </button>
-      <div class="collapse position-relative" id="category1" style="z-index: 1050;">
-        <div class="card card-body overflow-auto text-dark" 
-             style="height: 200px; width: 180px; border-color: transparent;">
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+
+    <div class="container" style="color:rgb(46, 82, 124);">
+      <div class="row">
+        <!-- Column: Region Select -->
+        <div class="col-md-3 mb-3">
+          <label for="location" class="form-label">Region</label>
+          <select id="location" class="form-control" v-model="location" @change="updateCities">
+            <option v-for="location in getLocation" :key="location.oblast" :value="location.oblast">
+              {{ location.oblast }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Column: City Select -->
+        <div class="col-md-3 mb-3">
+          <label for="city" class="form-label">City</label>
+          <select id="city" class="form-control" v-model="city" :disabled="!location">
+            <option v-for="city in locations" :key="city" :value="city">{{ city }}</option>
+          </select>
+        </div>
+
+        <!-- Column: Radio Buttons for Condition -->
+        <div class="col-md-3 mb-3">
+          <label class="form-label ">Condition</label>
+          <div class="d-flex">
+            <div class="me-3">
+              <input type="radio" id="new" value="New" v-model="selectedCondition" class="form-check-input me-2">
+              <label for="new" class="form-check-label">New</label>
+            </div>
+            <div class="me-3">
+              <input type="radio" id="used" value="Used" v-model="selectedCondition" class="form-check-input me-2">
+              <label for="used" class="form-check-label">Used</label>
+            </div>
+            <div>
+              <input type="radio" id="all" value="all" v-model="selectedCondition" class="form-check-input me-2">
+              <label for="all" class="form-check-label">All</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Column: Price Range Inputs -->
+        <div class="col-md-3 mb-3">
+          <label for="priceRange" class="form-label d-flex justify-content-center">Price Range</label>
+          <div class="d-flex">
+            <input type="number" id="minPrice" v-model="minPrice" class="form-control" placeholder="Min Price">
+            <span class="mx-2">-</span>
+            <input type="number" id="maxPrice" v-model="maxPrice" class="form-control" placeholder="Max Price">
+          </div>
         </div>
       </div>
-      <hr style="color:rgb(46, 82, 124); width: 100px;" class="my-3">
-    </div>
-  </div>
-  
-  <!-- Second scrollable menu in the center -->
-  <div class="optionsContainer  d-flex flex-column align-items-center">
-    <div class="  scrollable-menu" 
-         style="width: 200px; background-color: transparent; border-color: transparent; min-height: 670px; border-radius: 5px;width: 1500px; margin-left: 50px;">
-      
-         <div v-for="(index,item) in getitems()" :key="index">
-          <p>{{ item }}</p>
-         </div>
-      <div class="tab-content mt-3  d-flex justify-content-center text-dark fw-bold" id="nav-tabContent">
-      <div class="tab-pane fade" id="nav-omnis" aria-labelledby="nav-omnis">omnis content</div>
-      <div class="tab-pane fade" id="nav-jev" aria-labelledby="jev">jevelry content</div>
-      <div class="tab-pane fade" id="nav-estate" aria-labelledby="nav-estate">real estate content...</div>
-      <div class="tab-pane fade" id="nav-automobile" aria-labelledby="nav-automobile">automobile content...</div>
-      <div class="tab-pane fade" id="nav-autoparts" aria-labelledby="nav-autoparts">auto parts content...</div>
-      <div class="tab-pane fade" id="nav-home" aria-labelledby="nav-home">home & garden content...</div>
-      <div class="tab-pane fade" id="nav-electronics" aria-labelledby="nav-electronics">electronics content...</div>
-      <div class="tab-pane fade" id="nav-baby" aria-labelledby="nav-baby">baby & kids content...</div>
-      <div class="tab-pane fade" id="nav-education" aria-labelledby="nav-education">education content...</div>
-      <div class="tab-pane fade" id="nav-sport" aria-labelledby="nav-sport">sport content...</div>
-      <div class="tab-pane fade" id="nav-clothing" aria-labelledby="nav-clothing">clothing content...</div>
-      <div class="tab-pane fade" id="nav-hardvare" aria-labelledby="nav-hardvare">hardware content...</div>
-      <div class="tab-pane fade" id="nav-services" aria-labelledby="nav-services">services content...</div>
-      <div class="tab-pane fade" id="nav-trading" aria-labelledby="nav-trading">trading content...</div>
-      <div class="tab-pane fade" id="nav-col" aria-labelledby="nav-col">trading content...</div>
-    </div>
-    </div>
-    
-  </div>
 
-</div>
+      <div class="optionsContainer  d-flex flex-column align-items-center">
+        <div class="scrollable-menu"
+          style="width: 1500px; margin-left: 50px;min-height: 700px;border-color: transparent;">
+
+          <div class="row">
+            <div class="col-md-6" v-for="(item, index) in filteredItems" :key="index">
+              <div class="card my-2">
+                <div class="card-body">
+                  <h5 class="card-title" style="color:rgb(46, 82, 124)">{{ item.productName }}</h5>
+                  <h5 class="card-title" style="color:rgb(46, 82, 124)">{{ item.price }}</h5>
+                  <h5 class="card-title" style="color:rgb(46, 82, 124)">{{ item.description }}</h5>
+                  <h5 class="card-title" style="color:rgb(46, 82, 124)">{{ item.region }}</h5>
+                  <button :id="index" @click="addToFavoritesid(item.id)">To favorites</button>
+                  <router-link :id="index" @click="setProductCard(item.id)" to="/prodCard">Link</router-link>
+                  <router-link to="/pay" class="mx-3" :id="index" @click="setOrderr(item.id)">Order</router-link>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-content mt-3  d-flex justify-content-center text-dark fw-bold" id="nav-tabContent">
+            <div class="tab-pane fade" id="nav-omnis" aria-labelledby="nav-omnis"></div>
+            <div class="tab-pane fade" id="nav-jev" aria-labelledby="jev"></div>
+            <div class="tab-pane fade" id="nav-estate" aria-labelledby="nav-estate"></div>
+            <div class="tab-pane fade" id="nav-automobile" aria-labelledby="nav-automobile"></div>
+            <div class="tab-pane fade" id="nav-autoparts" aria-labelledby="nav-autoparts"></div>
+            <div class="tab-pane fade" id="nav-home" aria-labelledby="nav-home"></div>
+            <div class="tab-pane fade" id="nav-electronics" aria-labelledby="nav-electronics"></div>
+            <div class="tab-pane fade" id="nav-baby" aria-labelledby="nav-baby"></div>
+            <div class="tab-pane fade" id="nav-education" aria-labelledby="nav-education"></div>
+            <div class="tab-pane fade" id="nav-sport" aria-labelledby="nav-sport"></div>
+            <div class="tab-pane fade" id="nav-clothing" aria-labelledby="nav-clothing"></div>
+            <div class="tab-pane fade" id="nav-col" aria-labelledby="nav-col"></div>
+            <div class="tab-pane fade" id="nav-hardware" aria-labelledby="nav-hardware"></div>
+            <div class="tab-pane fade" id="nav-services" aria-labelledby="nav-services"></div>
+            <div class="tab-pane fade" id="nav-trading" aria-labelledby="nav-trading"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
+
+
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { getFirestore, doc, updateDoc, arrayUnion } from "firebase/firestore";
 
 export default {
   name: "MainComponent",
   data() {
     return {
       searchString: "",
+      items: [],
+      locations: [],
+      location: null,
+      city: null,
+      selectedCondition: "",
+      minPrice: null,
+      maxPrice: null,
+      selectedCategory: null,
+      email: null
     };
   },
+
   computed: {
     ...mapGetters('auth', ['getUserName', 'getUserEmail', 'logout']),
+    ...mapGetters('todo', ['getProductList']),
+    ...mapGetters(['getLocation', 'getActive']),
+    loading() {
+      return this.$store.state.todo.loading;
+    },
+
+    filteredItems() {
+      return this.items.filter(item => {
+        const matchesSearch = !this.searchString || item.productName.toLowerCase().includes(this.searchString.toLowerCase());
+        const matchesLocation = !this.location || item.region === this.location;
+        const matchesCity = !this.city || item.city === this.city;
+        const matchesCondition = this.selectedCondition === "all" || !this.selectedCondition || item.condition === this.selectedCondition;
+        const matchesPrice = (!this.minPrice || item.price >= this.minPrice) &&
+          (!this.maxPrice || item.price <= this.maxPrice);
+        const matchesCategory = !this.selectedCategory || item.category === this.selectedCategory;
+
+        return matchesSearch && matchesLocation && matchesCity && matchesCondition && matchesPrice && matchesCategory;
+      });
+    }
   },
+
+
   methods: {
-    ...mapActions('todoItems',['loadList']),
+    ...mapActions(['setAction', 'setOrder', 'setMyLiked']),
+    ...mapActions('todo', ['loadList']),
+    updateCities() {
+      const selectedRegion = this.getLocation.find(location => location.oblast === this.location);
+      this.locations = selectedRegion ? selectedRegion.cities : [];
+      this.city = null;
+    },
     signOut() {
       this.$store.dispatch('auth/logout');
     },
-    getitems(){
-      return this.loadList
+    async getitems() {
+      await this.loadList();
+      this.items = this.getProductList;
+    },
+    setCategory(category) {
+      this.selectedCategory = category;
+    },
+
+    async addToFavoritesid(id) {
+      console.log(id);
+      console.log("============================================================");
+      console.log(this.getActive);
+      this.setMyLiked(id);
+      this.likedItems = this.getProductList.find(item => item.id == id);
+      if (this.likedItems) {
+        console.log(this.getUserEmail + "yerruitweir8ctn gwryog4utk rg370gx9rxnug4yi bk");
+        const db = getFirestore();
+        const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
+        await updateDoc(docRef, {
+          favorites: arrayUnion({
+            name: this.likedItems.productName || "",
+            price: this.likedItems.price || "",
+            condition: this.likedItems.condition || "",
+            description: this.likedItems.description || "",
+            id: this.likedItems.id,
+            photoUrls:this.likedItems.photoUrls,
+            publisher: this.likedItems.publisher || "",
+            pNumber: this.likedItems.phoneNumber || "",
+            email: this.getUserEmail || "",
+          }),
+        });
+      }
+    },
+
+    setProductCard(id) {
+      this.setAction(id);
+      console.log(this.getActive);
+    },
+    setOrderr(id) {
+      this.setOrder(id);
     }
+  },
+
+  created() {
+    this.getitems();
   }
 };
 </script>
@@ -184,11 +301,22 @@ export default {
 
 .scrollable-menu {
   max-height: 300px;
-  /* Adjust as needed */
   overflow-y: auto;
   width: 120px;
-  /* Ensure the width of the scrollbar */
   border: 1px solid #ccc;
   padding: 10px;
+}
+
+.scrollable-menu {
+  overflow: auto;
+}
+
+.scrollable-menu::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollable-menu {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 </style>
