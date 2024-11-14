@@ -1,7 +1,7 @@
 <template>
     <div class="main-back-color min-vh-100 d-flex justify-content-center align-items-center">
       
-      <div class="card p-5 rounded shadow-lg text-center" style="width: 480px; height: 800px; background-color: white;">
+      <div class="card p-5 rounded shadow-lg text-center" style="width: 480px; height: 850px; background-color: white;">
 
         <div class="profile-section mb-4">
           <div class="bg-danger rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 140px; height: 140px;">
@@ -32,6 +32,9 @@
           </router-link>
           <router-link class="list-group-item list-group-item-action text-center text-dark fs-5" to="/addApplication">
             <i class="bi bi-bar-chart me-2"></i> Publish new ad
+          </router-link>
+          <router-link class="list-group-item list-group-item-action text-center text-dark fs-5" to="/comunicate">
+            <i class="bi bi-bar-chart me-2"></i> Notifications
           </router-link>
         </div>
         <button @click="signOut" class="btn btn-dark fw-bold fs-5 w-100">

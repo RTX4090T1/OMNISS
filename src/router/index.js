@@ -12,6 +12,8 @@ import PaymentComponent from "@/components/PaymentComponent.vue";
 import MyOrdersComponent from "@/components/MyOrdersComponent.vue";
 import MySalesComponent from "@/components/MySalesComponent.vue";
 import RedactAddsComponent from "@/components/RedactAddsComponent.vue";
+import NotificationsComponent from "@/components/NotificationsComponent.vue";
+import ComunicationComponent from "@/components/ComunicationComponent.vue";
 
 const routes = [
   {
@@ -50,9 +52,10 @@ const routes = [
     component: MyAddsComponent
   },
   {
-    path: "/prodCard",
+    path: "/prodCard/:id",
     name: "prodCard",
-    component: ProductCardComponent
+    component: ProductCardComponent,
+    props: true
   },
   {
     path: "/pay",
@@ -73,6 +76,18 @@ const routes = [
     path: "/redact",
     name: "redact",
     component: RedactAddsComponent
+  },
+  {
+    path: "/notifications/:id",
+    name: "notifications",
+    component: NotificationsComponent,
+    props:true
+  },
+  {
+    path: "/comunicate",
+    name: "comunicate",
+    component: ComunicationComponent,
+    props:true
   }
 
 

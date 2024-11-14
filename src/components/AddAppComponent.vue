@@ -103,9 +103,9 @@
           </select>
         </div>
 
-        <div v-if="ad.images.length > 0" id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div v-if="ad.photoUrls.length > 0" id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
-            <div class="carousel-item" v-for="(image, index) in ad.images" :key="index"
+            <div class="carousel-item" v-for="(image, index) in ad.photoUrls" :key="index"
               :class="{ active: index === 0 }">
               <img :src="image" class="d-block w-100" alt="Uploaded Image">
             </div>
@@ -148,7 +148,6 @@ export default {
         description: "",
         phoneNumber: null,
         location: "",
-        images: [],
         city: "",
         photoUrls: []
       },
@@ -238,7 +237,6 @@ export default {
             body: formData,
           });
           const data = await response.json();
-          this.ad.images.push(data.data.url);
           this.ad.photoUrls.push(data.data.url);
         } catch (error) {
           console.error('Error uploading image:', error);

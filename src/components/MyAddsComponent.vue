@@ -5,9 +5,9 @@
         </header>
 
         <div class="container mt-4">
-            <div v-if="myOrders.length > 0">
+            <div v-if="myAds.length > 0">
                 <div class="row">
-                    <div class="col-md-4" v-for="(item, index) in myOrders" :key="index">
+                    <div class="col-md-4" v-for="(item, index) in myAds" :key="index">
                         <div class="card bg-dark text-white mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">{{ item.productName }}</h5>
@@ -28,7 +28,7 @@
                 </div>
             </div>
             <div v-else class="text-center" style="color:rgb(46, 82, 124);">
-                <p>Your store is emty, butb you always can extend it.</p>
+                <p>Your store is empty, but you always can extend it.</p>
             </div>
         </div>
     </div>
@@ -38,17 +38,17 @@ import { mapActions, mapGetters } from 'vuex';
 import { getFirestore, arrayRemove, doc, updateDoc, getDoc } from "firebase/firestore";
 
 export default {
-    name: "MyAppsComponent",
+    name: "MyAddsComponent",
     data() {
         return {
             id: "",
-            myOrders: [],
-            tf:false,
+            myAds: [],
+            tf: false,
         };
     },
     computed: {
         ...mapGetters('todo', ['getProductList']),
-        ...mapGetters(['getTotalyOrdered']),
+        ...mapGetters(['getTotalyOrdered', 'getToRedact']),
         ...mapGetters('uFAOS', ['getOrdered']),
         ...mapGetters('auth', ['getUserEmail'])
     },
@@ -56,7 +56,7 @@ export default {
     methods: {
         ...mapActions('todo', ['deleteItem']),
         ...mapActions(['setRedact']),
-        
+
         async showMyItems() {
             try {
                 const db = getFirestore();
@@ -64,7 +64,7 @@ export default {
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     const arrayData = docSnap.data().selfAdds || [];
-                    this.myOrders = arrayData.filter(order => order.email === this.getUserEmail);
+                    this.myAds = arrayData.filter(order => order.email === this.getUserEmail);
                 } else {
                     console.error("No such document!");
                 }
@@ -74,23 +74,33 @@ export default {
         },
         async deleteApp(index) {
             try {
-                const itemToDelete = this.myOrders[index];
+                const itemToDelete = this.myAds[index];
                 const db = getFirestore();
+
+                // Delete from selfAdds array
                 const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
                 await updateDoc(docRef, {
                     selfAdds: arrayRemove(itemToDelete)
                 });
-                this.showMyItems(); 
+
+                // Delete from allAdds array
+                const docRefAllAdds = doc(db, "todo", "AHZWnRmOg9CQtYZmf2bA");
+                await updateDoc(docRefAllAdds, {
+                    allAds: arrayRemove(itemToDelete)
+                });
+
+                this.showMyItems();
                 this.deleteItem(itemToDelete.id);
             } catch (error) {
                 console.error("Error removing app:", error);
             }
         },
-        deletee(){
-            this.tf = !this.tf
+        deletee() {
+            this.tf = !this.tf;
         },
         setId(id) {
-            this.setRedact(id)
+            this.setRedact(id);
+            console.log(this.getToRedact);
         },
     },
     created() {

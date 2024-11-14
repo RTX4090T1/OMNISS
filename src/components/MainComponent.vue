@@ -72,7 +72,6 @@
         type="button" aria-controls="nav-trading" @click="setCategory('Trading')">Trading</button>
     </div>
 
-
     <div class="searchInput d-flex justify-content-center align-items-center  position-relative my-3">
       <form label-for="search" label="Find">
         <input type="text" id="search" v-model="searchString" placeholder="Omnis..."
@@ -142,9 +141,13 @@
                   <h5 class="card-title" style="color:rgb(46, 82, 124)">{{ item.price }}</h5>
                   <h5 class="card-title" style="color:rgb(46, 82, 124)">{{ item.description }}</h5>
                   <h5 class="card-title" style="color:rgb(46, 82, 124)">{{ item.region }}</h5>
+                  <div v-if="item.photoUrls && item.photoUrls.length">
+                    <img v-for="(photo, index) in item.photoUrls" :src="photo" :key="index" class="ad-image">
+                  </div>
                   <button :id="index" @click="addToFavoritesid(item.id)">To favorites</button>
-                  <router-link :id="index" @click="setProductCard(item.id)" to="/prodCard">Link</router-link>
+                  <router-link :id="index"  :to="{name: 'prodCard', params:{id: item.id}}">Link</router-link>
                   <router-link to="/pay" class="mx-3" :id="index" @click="setOrderr(item.id)">Order</router-link>
+                  <router-link :id="index"  :to="{name: 'notifications', params:{id: item.id}}">Chat</router-link>
                 </div>
               </div>
             </div>
@@ -172,8 +175,6 @@
     </div>
   </div>
 </template>
-
-
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
@@ -233,20 +234,19 @@ export default {
     },
     async getitems() {
       await this.loadList();
-      this.items = this.getProductList;
+      this.items = this.getProductList.map(item => ({
+        ...item,
+        photoUrls: item.photoUrls || []
+      }));
     },
     setCategory(category) {
       this.selectedCategory = category;
     },
 
     async addToFavoritesid(id) {
-      console.log(id);
-      console.log("============================================================");
-      console.log(this.getActive);
       this.setMyLiked(id);
       this.likedItems = this.getProductList.find(item => item.id == id);
       if (this.likedItems) {
-        console.log(this.getUserEmail + "yerruitweir8ctn gwryog4utk rg370gx9rxnug4yi bk");
         const db = getFirestore();
         const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
         await updateDoc(docRef, {
@@ -256,18 +256,13 @@ export default {
             condition: this.likedItems.condition || "",
             description: this.likedItems.description || "",
             id: this.likedItems.id,
-            photoUrls:this.likedItems.photoUrls,
+            photoUrls: this.likedItems.photoUrls,
             publisher: this.likedItems.publisher || "",
             pNumber: this.likedItems.phoneNumber || "",
             email: this.getUserEmail || "",
           }),
         });
       }
-    },
-
-    setProductCard(id) {
-      this.setAction(id);
-      console.log(this.getActive);
     },
     setOrderr(id) {
       this.setOrder(id);
@@ -318,5 +313,12 @@ export default {
 .scrollable-menu {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.ad-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-right: 10px;
 }
 </style>

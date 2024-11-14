@@ -33,9 +33,9 @@ class FDBOperation {
 
   async dbAddItem(item) {
     try {
-      const docRef = doc(this.dbCollection, 'AHZWnRmOg9CQtYZmf2bA'); // Replace 'YOUR_DOCUMENT_ID' with your actual document ID
+      const docRef = doc(this.dbCollection, 'AHZWnRmOg9CQtYZmf2bA'); 
       await updateDoc(docRef, {
-        allAds: arrayUnion(item) // This assumes you have an array field named 'itemsArray' in your document
+        allAds: arrayUnion(item) 
       });
       return docRef.id; 
     } catch (error) {

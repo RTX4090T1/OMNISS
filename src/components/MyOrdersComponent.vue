@@ -42,7 +42,7 @@ export default {
     },
     computed: {
         ...mapGetters('todo', ['getProductList']),
-        ...mapGetters(['getTotalyOrdered','setAction']),
+        ...mapGetters(['getTotalyOrdered', 'setAction']),
         ...mapGetters('uFAOS', ['getOrdered']),
         ...mapGetters('auth', ['getUserEmail'])
     },
@@ -69,7 +69,6 @@ export default {
         this.showMyItems();
     }
 }
-
 </script>
 
 <style scoped>

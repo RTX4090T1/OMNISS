@@ -1,12 +1,15 @@
 <script>
 import { mapGetters } from 'vuex';
-import { getFirestore, doc, updateDoc, arrayUnion } from "firebase/firestore";
+import { getFirestore, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 
 export default {
   name: "ProductCardComponent",
+  props: ['id'],
   data() {
     return {
-      selectedProduct: null
+      products: [],
+      selectedProduct: null,
+      photos: []
     };
   },
   computed: {
@@ -15,16 +18,39 @@ export default {
     ...mapGetters(['getLocation', 'getActive']),
   },
   methods: {
-    getSelected() {
-      this.selectedProduct = this.getProductList.find(
-        prod => prod.id === this.getActive
-      );
+    async loadProducts() {
+      try {
+        console.log(this.getUserEmail);
+        const db = getFirestore();
+        const docRef = doc(db, "todo", "AHZWnRmOg9CQtYZmf2bA");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const arrayData = docSnap.data().allAds || [];
+          this.products = arrayData;
+          console.log(this.products);
+          this.getSelected()
+        } else {
+          console.error("No such document!");
+        }
+      } catch (error) {
+        console.error("Error fetching document:", error);
+      }
     },
-    async addToFavorites(id) {
+    getSelected() {
+      this.selectedProduct = this.products.find(
+        prod => prod.id == this.id
+      );
+      if (this.selectedProduct) {
+        this.photos = this.selectedProduct.photoUrls;
+      } else {
+        console.error("Product not found.");
+      }
+    },
+    async addToFavorites() {
       try {
         const db = getFirestore();
         const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-        const element = this.getProductList.find(prod => prod.id === id);
+        const element = this.getProductList.find(prod => prod.id === this.id);
         if (element) {
           await updateDoc(docRef, {
             favorites: arrayUnion({
@@ -40,13 +66,12 @@ export default {
       }
     },
     signOut() {
-      // Sign out logic (e.g., clear auth data)
       this.$store.commit('auth/CLEAR_USER_DATA');
       this.$router.push('/');
     }
   },
   created() {
-    this.getSelected();
+    this.loadProducts();
   }
 };
 </script>
@@ -75,37 +100,39 @@ export default {
       </span>
     </div>
   </header>
-  
+
   <div v-if="selectedProduct" class="product-card card mb-4 shadow-sm mx-auto">
-    <div id="carousel-{{ selectedProduct.id }}" class="carousel slide carousel-placeholder" data-bs-ride="carousel">
+    <div :id="'carousel-' + selectedProduct.id" class="carousel slide carousel-placeholder" data-bs-ride="carousel">
       <div class="carousel-inner">
-        <div class="carousel-item" :class="{ active: i === 0 }" v-for="(photo, i) in selectedProduct.photos" :key="i">
+        <div class="carousel-item" :class="{ active: i === 0 }" v-for="(photo, i) in photos" :key="i">
           <img :src="photo" class="d-block w-100" alt="Product Image">
         </div>
       </div>
-      <button class="carousel-control-prev" type="button" :data-bs-target="'#carousel-' + selectedProduct.id" data-bs-slide="prev">
+      <button class="carousel-control-prev" type="button" :data-bs-target="'#carousel-' + selectedProduct.id"
+        data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
       </button>
-      <button class="carousel-control-next" type="button" :data-bs-target="'#carousel-' + selectedProduct.id" data-bs-slide="next">
+      <button class="carousel-control-next" type="button" :data-bs-target="'#carousel-' + selectedProduct.id"
+        data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
       </button>
     </div>
-    <div class="card-body text-center">
-      <h3 class="card-title product-name">{{ selectedProduct.productName }}</h3>
-      <div class="product-details d-flex justify-content-between">
-        <p class="price">Price: {{ selectedProduct.price }}</p>
-        <p class="condition">Condition: {{ selectedProduct.condition }}</p>
-        <p class="price-condition">Price Condition: {{ selectedProduct.priceCondition }}</p>
-      </div>
-      <p class="card-text location">Location: {{ selectedProduct.region }}</p>
-      <p class="card-text publisher">Publisher: {{ selectedProduct.publisher }}</p>
-      <p class="card-text publisher-phone">Publisher Phone: {{ selectedProduct.publisherPhone }}</p>
-      <p class="card-text description">Description: {{ selectedProduct.description }}</p>
-      <router-link to="/pay">Order</router-link>
-      <button @click="addToFavorites(selectedProduct.id)">To favorites</button>
+  <div class="card-body text-center">
+    <h3 class="card-title product-name">{{ selectedProduct.productName }}</h3>
+    <div class="product-details d-flex justify-content-between">
+      <p class="price">Price: {{ selectedProduct.price }}</p>
+      <p class="condition">Condition: {{ selectedProduct.condition }}</p>
+      <p class="price-condition">Price Condition: {{ selectedProduct.priceCondition }}</p>
     </div>
+    <p class="card-text location">Location: {{ selectedProduct.region }}</p>
+    <p class="card-text publisher">Publisher: {{ selectedProduct.publisher }}</p>
+    <p class="card-text publisher-phone">Publisher Phone: {{ selectedProduct.phoneNumber }}</p>
+    <p class="card-text description">Description: {{ selectedProduct.description }}</p>
+    <router-link to="/pay">Order</router-link>
+    <button @click="addToFavorites(selectedProduct.id)">To favorites</button>
+  </div>
   </div>
 </template>
 

@@ -15,7 +15,8 @@
               </li>
               <li><a class="dropdown-item" href="#">Support</a></li>
               <li v-if="getUserEmail" @click="signOut"><a class="dropdown-item" href="#">Sign Out</a></li>
-              <li v-if="!getUserEmail"><a class="dropdown-item" href="#"><router-link to="/login">Sign In / Log In</router-link></a></li>
+              <li v-if="!getUserEmail"><a class="dropdown-item" href="#"><router-link to="/login">Sign In / Log
+                    In</router-link></a></li>
               <li><a class="dropdown-item" href="#"><router-link to="/">Home</router-link></a></li>
             </ul>
           </div>
@@ -108,9 +109,10 @@
     </div>
   </div>
 </template>
-  
+
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { getFirestore, doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
 
 export default {
   name: "RedactAddsComponent",
@@ -127,7 +129,7 @@ export default {
         category: "",
         location: "",
         city: "",
-        photos: [] // New field for photo URLs
+        photos: []
       },
       filteredCities: []
     };
@@ -137,56 +139,99 @@ export default {
     ...mapGetters('auth', ['getUserName', 'getUserEmail', 'setRedact'])
   },
   methods: {
-  ...mapActions('todo', ['updateItemInArray']),
-  updateCities() {
-    const selectedOblast = this.getLocation.find(location => location.oblast === this.ad.location);
-    this.filteredCities = selectedOblast ? selectedOblast.cities : [];
-  },
-  async handleEdit() {
-    var docId = 'AHZWnRmOg9CQtYZmf2bA';  // Replace with your actual document ID
-    var itemId = this.getToRedact;
-    try {
-      await this.updateItemInArray({
-        docId: docId,
-        itemId: itemId,
-        data: {
-          productName: this.ad.productName,
-          price: this.ad.price,
-          description: this.ad.description,
-          phoneNumber: this.ad.phoneNumber,
-          publisher: this.getUserName,
-          city: this.ad.city,
-          region: this.ad.location,
-          category: this.ad.category,
-          condition: this.ad.condition,
-          priceCondition: this.ad.priceCondition,
-          email: this.getUserEmail,
-          photos: this.ad.photos // Include photos field in the update
+    ...mapActions('todo', ['updateItemInArray']),
+    updateCities() {
+      const selectedOblast = this.getLocation.find(location => location.oblast === this.ad.location);
+      this.filteredCities = selectedOblast ? selectedOblast.cities : [];
+    },
+    async handleEdit() {
+      var docId = 'AHZWnRmOg9CQtYZmf2bA';
+      var itemId = this.getToRedact;
+      try {
+        await this.updateItemInArray({
+          docId: docId,
+          itemId: itemId,
+          data: {
+            productName: this.ad.productName,
+            price: this.ad.price,
+            description: this.ad.description,
+            phoneNumber: this.ad.phoneNumber,
+            publisher: this.getUserName,
+            city: this.ad.city,
+            region: this.ad.location,
+            category: this.ad.category,
+            condition: this.ad.condition,
+            priceCondition: this.ad.priceCondition,
+            email: this.getUserEmail,
+            photos: this.ad.photos
+          }
+        });
+
+        const db = getFirestore();
+        const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
+
+        console.log(this.getToRedact);
+
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          const exactItem = data.selfAdds.find(item => item.id === itemId);
+
+          if (exactItem) {
+            await updateDoc(docRef, {
+              selfAdds: arrayRemove(exactItem)
+            });
+
+            await updateDoc(docRef, {
+              selfAdds: arrayUnion({
+                id: itemId,
+                productName: this.ad.productName,
+                price: this.ad.price,
+                description: this.ad.description,
+                phoneNumber: this.ad.phoneNumber,
+                publisher: this.getUserName,
+                city: this.ad.city,
+                region: this.ad.location,
+                category: this.ad.category,
+                condition: this.ad.condition,
+                priceCondition: this.ad.priceCondition,
+                email: this.getUserEmail,
+                photos: this.ad.photos
+              })
+            });
+          } else {
+            console.error("Item not found");
+          }
+        } else {
+          console.error("No such document!");
         }
+
+        this.$router.push('/account');
+      } catch (error) {
+        console.error("An error occurred while processing your request:", error);
+      }
+    },
+    handleFileUpload(event) {
+      const files = event.target.files;
+      const fileArray = Array.from(files);
+      const photoUrls = [];
+
+      fileArray.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          photoUrls.push(e.target.result);
+          this.ad.photos = photoUrls;
+        };
+        reader.readAsDataURL(file);
       });
-      this.$router.push('/account');
-    } catch (error) {
-      console.error("An error occurred while processing your request:", error);
     }
   },
-  handleFileUpload(event) {
-    const files = event.target.files;
-    const fileArray = Array.from(files);
-    const photoUrls = [];
-
-    fileArray.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        photoUrls.push(e.target.result);
-        this.ad.photos = photoUrls;
-      };
-      reader.readAsDataURL(file);
-    });
+  created() {
+    console.log(this.getToRedact);
   }
-}
 };
 </script>
-  
+
 <style scoped>
 .mainheader {
   background-color: rgb(46, 82, 124);

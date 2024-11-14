@@ -7,4 +7,5 @@ import 'bootstrap';
 import './reset.css';
 
 
+
 createApp(App).use(store).use(router).mount("#app");
