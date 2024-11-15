@@ -1,7 +1,7 @@
 <template>
   <div class="mainBackColor text-white min-vh-100 d-flex justify-content-center align-items-center">
-    <div class="login-container p-5 rounded shadow-lg bg-primary text-center">
-      <h2 class="mb-4">Login</h2>
+    <div class="login-container p-4 rounded shadow bg-light text-center">
+      <h2 class="mb-4 text-primary">Login</h2>
       
       <form @submit.prevent="loginWithEmaill" class="text-start">
         <div class="mb-3">
@@ -11,7 +11,7 @@
             v-model="email" 
             id="email" 
             placeholder="Enter your email" 
-            class="form-control bg-transparent text-white border-secondary" 
+            class="form-control" 
           />
         </div>
         
@@ -22,20 +22,20 @@
             v-model="password" 
             id="password" 
             placeholder="Enter your password" 
-            class="form-control bg-transparent text-white border-secondary" 
+            class="form-control" 
           />
         </div>
-        <span v-if="error">{{ error }}</span>
+        <span v-if="error" class="text-danger">{{ error }}</span>
         
-        <button type="submit" class="btn btn-light w-100 mb-3">Login</button>
+        <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
       </form>
 
-      <hr class="text-white" />
+      <hr />
 
-      <button @click="googleLogin" class="btn btn-outline-light w-100">
+      <button @click="googleLogin" class="btn btn-outline-primary w-100">
         <i class="bi bi-google me-2"></i> Login with Google
       </button>
-      <router-link class="d-flex my-3 justify-content-center align-items-center" style="color:white" to="/register">Create new account</router-link>
+      <router-link class="d-flex my-3 justify-content-center align-items-center text-decoration-none text-primary" to="/register">Create new account</router-link>
     </div>
   </div>
 </template>
@@ -90,30 +90,74 @@ export default {
 
 <style scoped>
 .mainBackColor {
-  background-color: #2e527c;
+  background-color: #f0f2f5;
 }
 
 .login-container {
   max-width: 400px;
+  border-radius: 8px;
+  background-color: white;
+  color: #333;
+}
+
+h2 {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #0d6efd;
 }
 
 .form-control {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  color: #495057;
+}
+
+.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.btn-primary {
+  background-color: #0d6efd;
+  border: none;
+  border-radius: 8px;
+}
+
+.btn-primary:hover {
+  background-color: #0b5ed7;
+}
+
+.btn-outline-primary {
+  color: #0d6efd;
+  border: 1px solid #0d6efd;
+  border-radius: 8px;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0d6efd;
   color: white;
 }
 
-.btn-light {
-  background-color: #ffffff;
-  color: #2e527c;
+hr {
+  border-color: #ced4da;
 }
 
-.btn-outline-light {
-  color: #ffffff;
-  border-color: #ffffff;
+.text-danger {
+  font-size: 0.875rem;
 }
 
-.btn-outline-light:hover {
-  background-color: #ffffff;
-  color: #2e527c;
+.text-primary {
+  color: #0d6efd !important;
+}
+
+.text-decoration-none {
+  text-decoration: none !important;
+}
+
+@media (max-width: 576px) {
+  .login-container {
+    width: 90%;
+  }
 }
 </style>

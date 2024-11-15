@@ -1,31 +1,52 @@
 <template>
     <div class="mainBackColor text-white min-vh-100">
-        <header class="mainheader text-center">
-            <h3>Orders</h3>
-        </header>
+        <header class="main-header d-flex justify-content-between align-items-center px-4 py-3 shadow">
+      <h1 class="text-primary">Orders</h1>
+      <div class="dropdown ms-auto">
+        <button class="btn btn-light dropdown-toggle" type="button" id="setting" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          Options
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="setting">
+          <li v-if="getUserEmail">
+            <router-link to="/account" class="dropdown-item">Account</router-link>
+          </li>
+          <li><a class="dropdown-item" href="#">Support</a></li>
+          <li v-if="getUserEmail" @click="signOut"><a class="dropdown-item" href="#">Sign Out</a></li>
+          <li v-if="!getUserEmail">
+            <router-link to="/login" class="dropdown-item">Sign In / Log In</router-link>
+          </li>
+          <li>
+            <router-link to="/" class="dropdown-item">Home</router-link>
+          </li>
+        </ul>
+      </div>
+    </header>
 
-        <div class="container mt-4">
-            <div v-if="myOrders.length > 0">
-                <div class="row">
-                    <div class="col-md-4" v-for="(item, index) in myOrders" :key="index">
-                        <div class="card bg-dark text-white mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ item.name }}</h5>
-                                <p class="card-text">Price: {{ item.price }}</p>
-                                <p class="card-text">Description: {{ item.description }}</p>
-                                <p class="card-text">Publisher: {{ item.publisher }}</p>
-                                <p class="card-text">Condition: {{ item.condition }}</p>
-                                <p class="card-text">Orderer: {{ item.email }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="container mt-5">
+      <div v-if="myOrders.length > 0">
+        <div class="row">
+          <div class="col-md-4" v-for="(item, index) in myOrders" :key="index">
+            <div class="card text-white mb-3">
+              <div class="card-img-top">
+                <!-- Display the first image in the item.photos array -->
+                <img :src="item.photoUrls[0]" class="card-img" alt="Product Image">
+              </div>
+              <div class="card-body">
+                <h5 class="card-title">{{ item.productName }}</h5>
+                <p class="card-text">Price: {{ item.price }}</p>
+                <p class="card-text">Description: {{ item.description }}</p>
+                <p class="card-text">Region: {{ item.region }}</p>
+              </div>
             </div>
-            <div v-else class="text-center" style="color:rgb(46, 82, 124);">
-                <p>No orders yet.</p>
-            </div>
+          </div>
         </div>
+      </div>
+      <div v-else class="text-center" style="color: rgb(46, 82, 124);">
+        <p>No orders yet.</p>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
@@ -73,7 +94,7 @@ export default {
 
 <style scoped>
 .mainBackColor {
-    background-color: azure;
+    background-color: rgb(255, 255, 255);
 }
 
 .mainheader {

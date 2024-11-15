@@ -1,10 +1,12 @@
 <template>
     <div class="container">
       <div v-for="(message, index) in filteredHistory" :key="index" class="message-container">
-        <span :class="{'element-right': email === message.email, 'element-left': email !== message.email}" class="message">{{ message.message }}</span>
+        <span :class="{'element-right': email === message.email, 'element-left': email !== message.email}" class="message">
+          {{ message.message }}
+        </span>
       </div>
       <form @submit.prevent="checkBefor" class="form-container">
-        <input type="text" v-model="message" placeholder="Message" class="message-input">
+        <input type="text" v-model="message" placeholder="Type your message..." class="message-input" />
         <button type="submit" class="send-button">Send</button>
       </form>
     </div>
@@ -22,7 +24,7 @@
         message: null,
         history: [],
         email: ""
-      }
+      };
     },
     computed: {
       ...mapGetters('auth', ['getUserEmail']),
@@ -94,16 +96,19 @@
   
   <style scoped>
   .container {
-    background-color: white;
+    background-color: #f9f9f9;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 0 auto;
   }
   
   .message-container {
     margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
+    padding: 5px 0;
   }
   
   .message {
@@ -112,21 +117,26 @@
     color: white;
     max-width: 70%;
     word-wrap: break-word;
+    font-size: 14px;
+    line-height: 1.4;
   }
   
   .element-right {
-    background-color: blue;
+    background-color: #0061F2;
     margin-left: auto;
+    border-radius: 20px 0 20px 20px;
   }
   
   .element-left {
-    background-color: grey;
+    background-color: #B0B0B0;
     margin-right: auto;
+    border-radius: 0 20px 20px 20px;
   }
   
   .form-container {
     display: flex;
     margin-top: 20px;
+    justify-content: space-between;
   }
   
   .message-input {
@@ -134,19 +144,22 @@
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    font-size: 14px;
   }
   
   .send-button {
-    background-color: black;
+    background-color: #0061F2;
     color: white;
     border: none;
     padding: 10px 20px;
     margin-left: 10px;
     border-radius: 5px;
     cursor: pointer;
+    font-size: 14px;
   }
   
   .send-button:hover {
-    background-color: darkgrey;
+    background-color: #0051c2;
   }
   </style>
+  

@@ -1,26 +1,25 @@
 <template>
   <div class="mainBackColor text-white min-vh-100">
-    <header class="mainheader">
-      <div class="container d-flex justify-content-center align-items-center" style="height: 50px;">
-        <h1 class="text-white me-3">Publish ad</h1>
-        <span class="ms-auto text-white position-absolute start-0 ms-5">
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle bg-transparent" style="border-color: transparent"
-              type="button" id="setting" data-bs-toggle="dropdown" aria-expanded="false">
-              Options
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="setting">
-              <li v-if="getUserEmail">
-                <a class="dropdown-item" href="#"><router-link to="/account">Account</router-link></a>
-              </li>
-              <li><a class="dropdown-item" href="#">Support</a></li>
-              <li v-if="getUserEmail" @click="signOut"><a class="dropdown-item" href="#">Sign Out</a></li>
-              <li v-if="!getUserEmail"><a class="dropdown-item" href="#"><router-link to="/login">Sign In / Log
-                    In</router-link></a></li>
-              <li><a class="dropdown-item" href="#"><router-link to="/">Home</router-link></a></li>
-            </ul>
-          </div>
-        </span>
+    <header class="main-header d-flex justify-content-between align-items-center px-4 py-3 shadow">
+      <h1 class="text-primary">Post an advertisement</h1>
+      <div class="dropdown ms-auto">
+        <button class="btn btn-light dropdown-toggle" type="button" id="setting" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          Options
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="setting">
+          <li v-if="getUserEmail">
+            <router-link to="/account" class="dropdown-item">Account</router-link>
+          </li>
+          <li><a class="dropdown-item" href="#">Support</a></li>
+          <li v-if="getUserEmail" @click="signOut"><a class="dropdown-item" href="#">Sign Out</a></li>
+          <li v-if="!getUserEmail">
+            <router-link to="/login" class="dropdown-item">Sign In / Log In</router-link>
+          </li>
+          <li>
+            <router-link to="/" class="dropdown-item">Home</router-link>
+          </li>
+        </ul>
       </div>
     </header>
 
@@ -103,7 +102,8 @@
           </select>
         </div>
 
-        <div v-if="ad.photoUrls.length > 0" id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div v-if="ad.photoUrls.length > 0" id="carouselExampleIndicators" class="carousel slide"
+          data-bs-ride="carousel">
           <div class="carousel-inner">
             <div class="carousel-item" v-for="(image, index) in ad.photoUrls" :key="index"
               :class="{ active: index === 0 }">
@@ -248,12 +248,13 @@ export default {
 </script>
 <style scoped>
 .mainheader {
-  background-color: rgb(46, 82, 124);
+  background-color: #f7f7f7;
   padding: 20px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .mainBackColor {
-  background-color: azure;
+  background-color: rgb(255, 255, 255);
 }
 
 form {

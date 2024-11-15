@@ -1,10 +1,29 @@
 <template>
     <div class="mainBackColor text-white min-vh-100">
-        <header class="mainheader">
-            <div class="container d-flex justify-content-center align-items-center" style="height: 50px;">
-                <h1 class="text-white me-3">Payment Form</h1>
-            </div>
-        </header>
+<header class="main-header d-flex justify-content-between align-items-center px-4 py-3 shadow">
+      <h1 class="text-primary">Payment Form</h1>
+      <div class="dropdown ms-auto">
+        <button class=" dropdown-toggle" type="button" id="setting" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          Options
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="setting">
+          <li v-if="getUserEmail">
+            <router-link to="/account" class="dropdown-item">Account</router-link>
+          </li>
+          <li><a class="dropdown-item" href="#">Support</a></li>
+          <li v-if="getUserEmail" @click="signOut"><a class="dropdown-item" href="#">Sign Out</a></li>
+          <li v-if="!getUserEmail">
+            <router-link to="/login" class="dropdown-item">Sign In / Log In</router-link>
+          </li>
+          <li>
+            <router-link to="/" class="dropdown-item">Home</router-link>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+        
 
         <div class="container mt-5">
             <form @submit.prevent="processPayment" class="card p-4 shadow-sm">
@@ -248,13 +267,13 @@ h1 {
 }
 
 button {
-    background-color: #007bff;
-    border-color: #007bff;
+    background-color: transparent;
+    border-color: transparent;
     border-radius: 5px;
     padding: 10px 0;
     font-size: 1rem;
     font-weight: bold;
-    color: #ffffff;
+    color: #000000;
 }
 
 .text-danger {
