@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-      <div v-for="(message, index) in history" :key="index" class="message-container">
+      <div v-for="(message, index) in filteredHistory" :key="index" class="message-container">
         <span :class="{'element-right': email === message.email, 'element-left': email !== message.email}" class="message">{{ message.message }}</span>
       </div>
       <form @submit.prevent="checkBefor" class="form-container">
@@ -16,7 +16,7 @@
   
   export default {
     name: "NotificationsComponent",
-    props: ['id'],
+    props: ['id', 'userEmail'],
     data() {
       return {
         message: null,
@@ -25,19 +25,21 @@
       }
     },
     computed: {
-      ...mapGetters('auth', ['getUserEmail'])
+      ...mapGetters('auth', ['getUserEmail']),
+      filteredHistory() {
+        return this.history.filter(msg => msg.email === this.userEmail || msg.email === this.email);
+      }
     },
     methods: {
-        
       async checkBefor() {
-        this.email = this.getUserEmail
+        this.email = this.getUserEmail;
+        let data = {};
         try {
           const db = getFirestore();
           const docRef = doc(db, "messenger", "qYmC5hhIWrJP7rh22bc0");
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
-            const arrayData = docSnap.data();
-            var data = arrayData;
+            data = docSnap.data();
           } else {
             console.error("No such document!");
           }
@@ -45,56 +47,47 @@
           console.error("Error fetching document:", error);
         }
         if (!data[this.id]) {
-          const db = getFirestore();
-          const docRef = doc(db, "messenger", "qYmC5hhIWrJP7rh22bc0");
           const newArray = {
             email: this.email,
             message: "",
-            id:this.id
+            id: this.id
           };
-          await updateDoc(docRef, {
-            [this.id]: [newArray]
-          });
-          this.messeging()
-        } else {
-          this.messeging()
+          try {
+            const db = getFirestore();
+            const docRef = doc(db, "messenger", "qYmC5hhIWrJP7rh22bc0");
+            await updateDoc(docRef, {
+              [this.id]: [newArray]
+            });
+          } catch (error) {
+            console.error("Error updating document:", error);
+          }
         }
+        await this.messeging();
       },
-  
       async messeging() {
         try {
           const db = getFirestore();
           const docRef = doc(db, "messenger", "qYmC5hhIWrJP7rh22bc0");
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
-            const arrayData = docSnap.data()[this.id];
-            this.history = arrayData;
+            this.history = docSnap.data()[this.id];
           } else {
             console.error("No such document!");
           }
-        } catch (error) {
-          console.error("Error fetching document:", error);
-        }
-        try {
-          const db = getFirestore();
-          const docRef = doc(db, "messenger", "qYmC5hhIWrJP7rh22bc0");
-          console.log(this.id, this.message, this.email);
-          
           await updateDoc(docRef, {
             [this.id]: arrayUnion({
               email: this.email,
               message: this.message,
-              id:this.id
+              id: this.id
             })
           });
-          
         } catch (error) {
           console.error("Error while sending from:", this.email, error);
         }
       }
     },
     created() {
-      this.checkBefor()
+      this.checkBefor();
     }
   };
   </script>
