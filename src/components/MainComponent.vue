@@ -154,7 +154,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('PRODUCT_STORE', ['getDocumentFromFDB', 'updateDocumentInFDB', 'getItemFromFDB']),
+    ...mapActions('PRODUCT_STORE', ['getDocumentFromFDB', 'updateDocumentInFDB', 'getItemFromFDB', 'updateItemInFDB']),
     onOFF(id, email) {
       this.onOff = !this.onOff
       this.id = id
@@ -184,24 +184,36 @@ export default {
     setCategory(category) {
       this.selectedCategory = category;
     },
-
+    
     async addToFavoritesid(id) {
+      console.log(id);
+      
       const liked = this.items.find(item => item.id = id)
-      this.updateDocumentInFDB("S64AWHz74Ua8E4ix9iMk", "favorites", "uFAOS", {
-        name: this.liked.name,
-        price: this.liked.price,
-        description: this.liked.description,
-        images: this.liked.images,
-        phone: this.liked.phone,
+      console.log(liked);
+      
+      var favorite = {
+        name: liked.name,
+        price: liked.price,
+        description: liked.description,
+        images: liked.images,
+        phone: liked.phone,
         publisher: this.getUserName,
-        location: this.liked.location,
-        region: this.liked.region,
-        category: this.liked.category,
-        condition: this.liked.condition,
-        priceCondition: this.liked.priceCondition,
+        location: liked.location,
+        region: liked.region,
+        category:liked.category,
+        condition: liked.condition,
+        priceCondition: liked.priceCondition,
         id: liked.id,
         email: this.getUserEmail,
-      },)
+      }
+      var result = this.updateItemInFDB({
+         collectionName: "uFAOS",
+         document: "S64AWHz74Ua8E4ix9iMk",
+         arrayName: "favorites",
+         newElement: favorite 
+      })
+      console.log(result);
+      
     },
     setOrderr(id) {
       this.setOrder(id);

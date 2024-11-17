@@ -19,12 +19,12 @@ export default {
         },
     },
     actions: {
-        async updateItemInFDB({ commit }, oldElement, document, newElement, collectionName) {
+        async updateItemInFDB({ commit }, {collectionName, document, arrayName, newElement}) {
             commit('setError', null)
             commit('setLoading', true)
             try {
-                const action = FDBOperations(collectionName)
-                await action.updateItemInFDB(oldElement, document, newElement)
+                const action = new FDBOperations(collectionName)
+                await action.updateItemInFDB(arrayName, document, newElement)
             } catch (error) {
                 commit('setError', error)
             } finally {
@@ -35,7 +35,7 @@ export default {
             commit('setError', null)
             commit('setLoading', true)
             try {
-                const action = FDBOperations(collectionName)
+                const action = new FDBOperations(collectionName)
                 await action.updateDocumentInFDB(document, newElement, data)
             } catch (error) {
                 commit('setError', error)
@@ -61,10 +61,9 @@ export default {
             commit('setError', null)
             commit('setLoading', true)
             try {
-                const action = FDBOperations(collectionName)
+                const action = new FDBOperations(collectionName)
                 const result = await action.getItemFromFDB(elementName, document)
                 console.log(result+"kfgklunvfhbmgfhfgvngrhrtvhrthrtg");
-                
                 return result
             } catch (error) {
                 commit('setError', error)
@@ -72,12 +71,12 @@ export default {
                 commit('setLoading', false)
             }
         },
-        async deleteItemFromFDB({ commit }, collectionName, document, elementName) {
+        async deleteItemFromFDB({ commit }, {collectionName, document, field, elementName}) {
             commit('setError', null)
             commit('setLoading', true)
             try {
-                const action = FDBOperations(collectionName)
-                await action.deleteItemFromFDB(document, elementName)
+                const action = new FDBOperations(collectionName)
+                await action.deleteItemFromFDB(document, field, elementName)
             } catch (error) {
                 commit('setError', error)
             } finally {

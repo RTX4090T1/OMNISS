@@ -29,10 +29,10 @@
           <div class="col-md-4" v-for="(item, index) in likedItems" :key="index">
             <div class="card text-white mb-3">
               <div class="card-img-top">
-                <img :src="item.photoUrls[0]" class="card-img" alt="Product Image">
+                <img :src="item.images[0]" class="card-img" alt="Product Image">
               </div>
               <div class="card-body">
-                <h5 class="card-title">{{ item.productName }}</h5>
+                <h5 class="card-title">{{ item.name }}</h5>
                 <p class="card-text">Price: {{ item.price }}</p>
                 <p class="card-text">Description: {{ item.description }}</p>
                 <p class="card-text">Region: {{ item.region }}</p>
@@ -52,9 +52,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { getFirestore, doc, getDoc, updateDoc, arrayRemove } from "firebase/firestore";
-
+import { mapGetters, mapActions } from 'vuex';
 export default {
   name: "FavoritesComponent",
   data() {
@@ -64,51 +62,20 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['getLiked']),
-    ...mapGetters('todo', ['getProductList']),
     ...mapGetters('auth', ['getUserEmail'])
   },
   methods: {
-    async deleteApp(id) {
-      console.log(id);
+    ...mapActions('PRODUCT_STORE', ['deleteItemFromFDB', 'getItemFromFDB', 'updateItemInFDB']),
 
-      try {
-        var element = this.arrayData.find(el => el.id == id);
-        if (element) {
-          const db = getFirestore();
-          const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-          await updateDoc(docRef, {
-            favorites: arrayRemove(element)
-          });
-          this.showMyItems();
-        } else {
-          console.error("Element not found for deletion");
-        }
-      } catch (error) {
-        console.error("Error removing app:", error);
-      }
+    async deleteApp(id) {
+      const itemToDelete = this.likedItems.find(item => item.id = id)
+      this.deleteItemFromFDB({collectionName:"uFAOS", document:"S64AWHz74Ua8E4ix9iMk", field:"favorites",elementName:itemToDelete})
     },
     async showMyItems() {
-      try {
-        const db = getFirestore();
-        const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (Array.isArray(data.favorites)) {
-            this.arrayData = data.favorites.filter(el => el !== null) || [];
-          } else {
-            this.arrayData = [];
-          }
-          console.log(this.getUserEmail);
-          console.log(this.arrayData);
-          this.likedItems = this.arrayData.filter(order => order.email === this.getUserEmail);
-        } else {
-          console.error("No such document!");
-        }
-      } catch (error) {
-        console.error("Error fetching document:", error);
-      }
+      this.likedItems = await this.getItemFromFDB({collectionName: "uFAOS",
+       document: "S64AWHz74Ua8E4ix9iMk",
+        elementName: "favorites"})
+      this.likedItems = this.likedItems.filter(item => item.email == this.getUserEmail)
     }
   },
   created() {
