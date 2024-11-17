@@ -1,29 +1,29 @@
 <template>
     <div class="mainBackColor text-white min-vh-100">
-<header class="main-header d-flex justify-content-between align-items-center px-4 py-3 shadow">
-      <h1 class="text-primary">Payment Form</h1>
-      <div class="dropdown ms-auto">
-        <button class=" dropdown-toggle" type="button" id="setting" data-bs-toggle="dropdown"
-          aria-expanded="false">
-          Options
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="setting">
-          <li v-if="getUserEmail">
-            <router-link to="/account" class="dropdown-item">Account</router-link>
-          </li>
-          <li><a class="dropdown-item" href="#">Support</a></li>
-          <li v-if="getUserEmail" @click="signOut"><a class="dropdown-item" href="#">Sign Out</a></li>
-          <li v-if="!getUserEmail">
-            <router-link to="/login" class="dropdown-item">Sign In / Log In</router-link>
-          </li>
-          <li>
-            <router-link to="/" class="dropdown-item">Home</router-link>
-          </li>
-        </ul>
-      </div>
-    </header>
+        <header class="main-header d-flex justify-content-between align-items-center px-4 py-3 shadow">
+            <h1 class="text-primary">Payment Form</h1>
+            <div class="dropdown ms-auto">
+                <button class=" dropdown-toggle" type="button" id="setting" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Options
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="setting">
+                    <li v-if="getUserEmail">
+                        <router-link to="/account" class="dropdown-item">Account</router-link>
+                    </li>
+                    <li><a class="dropdown-item" href="#">Support</a></li>
+                    <li v-if="getUserEmail" @click="signOut"><a class="dropdown-item" href="#">Sign Out</a></li>
+                    <li v-if="!getUserEmail">
+                        <router-link to="/login" class="dropdown-item">Sign In / Log In</router-link>
+                    </li>
+                    <li>
+                        <router-link to="/" class="dropdown-item">Home</router-link>
+                    </li>
+                </ul>
+            </div>
+        </header>
 
-        
+
 
         <div class="container mt-5">
             <form @submit.prevent="processPayment" class="card p-4 shadow-sm">
@@ -171,7 +171,6 @@ export default {
                 this.paymentData.error = "Payment is being processed";
                 this.product = this.getProductList.find(prod => prod.id == this.getOrdered);
                 console.log(this.product);
-                
 
                 if (this.product) {
                     const db = getFirestore();
@@ -181,6 +180,7 @@ export default {
                             name: this.product.productName || "",
                             price: this.product.price || "",
                             condition: this.product.condition || "",
+                            photoUrls: this.product.photoUrls || "",
                             description: this.product.description || "",
                             publisher: this.product.publisher || "",
                             pNumber: this.product.phoneNumber || "",
@@ -198,22 +198,22 @@ export default {
         },
 
         async processToMySales() {
-  
             var email = this.getUserEmail;
             console.log(email);
             console.log('====================1111=====');
             console.log(this.product);
             try {
-                if (this.product.publishedBy == email) {
+                if (this.product.email == email) {
                     const db = getFirestore();
                     const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-                    console.log("=====================================================")
+                    console.log("=====================================================");
                     await updateDoc(docRef, {
                         sales: arrayUnion({
                             name: this.product.productName || "",
                             price: this.product.price || "",
                             description: this.product.description || "",
                             region: this.product.region,
+                            photoUrls: this.product.photoUrls || "",
                             phoneNumber: this.product.phoneNumber || "",
                             email: email || "",
                             id: this.id
@@ -229,6 +229,7 @@ export default {
     },
 };
 </script>
+
 
 <style scoped>
 .mainBackColor {

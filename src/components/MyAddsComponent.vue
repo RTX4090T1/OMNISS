@@ -29,7 +29,7 @@
                     <div class="col-md-4" v-for="(item, index) in myAds" :key="index">
                         <div class="card ad-card mb-4 shadow-sm">
                             <div class="card-body">
-                                <div class="card-img-top">
+                                <div class="card-img-top" v-if="item.photoUrls && item.photoUrls.length > 0">
                                     <img :src="item.photoUrls[0]" class="card-img" alt="Product Image">
                                 </div>
                                 <h5 class="card-title ad-name">{{ item.productName }}</h5>

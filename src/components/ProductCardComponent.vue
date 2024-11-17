@@ -53,14 +53,14 @@
       <p class="card-text publisher">Publisher: {{ selectedProduct.publisher }}</p>
       <p class="card-text publisher-phone">Publisher Phone: {{ selectedProduct.phoneNumber }}</p>
       <p class="card-text description">Description: {{ selectedProduct.description }}</p>
-      <router-link to="/pay" class="btn btn-primary w-100">Order</router-link>
+      <router-link @click="setOrderr(selectedProduct.id)" to="/pay" class="btn btn-primary w-100">Order</router-link>
       <button @click="addToFavorites" class="btn btn-outline-secondary w-100 mt-2">Add to Favorites</button>
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { getFirestore, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 
 export default {
@@ -79,6 +79,8 @@ export default {
     ...mapGetters(['getLocation', 'getActive']),
   },
   methods: {
+    ...mapActions(['setOrder']),
+
     async loadProducts() {
       try {
         const db = getFirestore();
@@ -127,6 +129,9 @@ export default {
     signOut() {
       this.$store.commit('auth/CLEAR_USER_DATA');
       this.$router.push('/');
+    },
+    setOrderr(id) {
+      this.setOrder(id);
     }
   },
   created() {

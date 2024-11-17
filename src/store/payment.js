@@ -21,15 +21,17 @@ export default {
   },
   mutations: {
     setItem(state, objectLIST) {
+      console.log("setItem mutation called with:", objectLIST);
       state.itemList = objectLIST;
     },
     setError(state, error) {
+      console.log("setError mutation called with:", error);
       state.error = error;
     },
     setLoading(state, load) {
+      console.log("setLoading mutation called with:", load);
       state.loading = load;
     },
-
   },
   actions: {
     async loadList({ commit }) {
@@ -37,9 +39,10 @@ export default {
       commit('setLoading', true);
       try {
         const list = await collectionDB.dbSnapshot();
-        console.log(list);
+        console.log("loadList action - list retrieved:", list);
         commit('setItem', list);
       } catch (error) {
+        console.error("loadList action - error:", error);
         commit('setError', error);
       } finally {
         commit('setLoading', false);
@@ -49,10 +52,11 @@ export default {
       commit('setError', null);
       commit('setLoading', true);
       try {
+        console.log("addItem action - item to add:", item);
         await collectionDB.dbAddItem(item);
         dispatch('loadList');
       } catch (error) {
-        console.log(error);
+        console.error("addItem action - error:", error);
         commit('setError', error);
       } finally {
         commit('setLoading', false);
@@ -62,9 +66,11 @@ export default {
       commit('setError', null);
       commit('setLoading', true);
       try {
+        console.log("updateItem action - itemId:", itemId, "data:", data);
         await collectionDB.dbUpdate(itemId, data);
         dispatch('loadList');
       } catch (error) {
+        console.error("updateItem action - error:", error);
         commit('setError', error);
       } finally {
         commit('setLoading', false);

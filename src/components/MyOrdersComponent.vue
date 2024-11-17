@@ -36,7 +36,8 @@
                 <h5 class="card-title">{{ item.productName }}</h5>
                 <p class="card-text">Price: {{ item.price }}</p>
                 <p class="card-text">Description: {{ item.description }}</p>
-                <p class="card-text">Region: {{ item.region }}</p>
+                <p class="card-text">Condition: {{ item.condition }}</p>
+                <p class="card-text">Phone: {{ item.pNumber }}</p>
               </div>
             </div>
           </div>

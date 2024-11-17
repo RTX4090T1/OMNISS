@@ -29,7 +29,6 @@
           <div class="col-md-4" v-for="(item, index) in likedItems" :key="index">
             <div class="card text-white mb-3">
               <div class="card-img-top">
-                <!-- Display the first image in the item.photos array -->
                 <img :src="item.photoUrls[0]" class="card-img" alt="Product Image">
               </div>
               <div class="card-body">

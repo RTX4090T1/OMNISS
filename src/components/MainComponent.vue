@@ -39,17 +39,17 @@
       <div class="row">
         <div class="col-md-3 mb-3">
           <label for="location" class="form-label">Region</label>
-          <select id="location" class="form-control" v-model="location" @change="updateCities">
-            <option v-for="location in getLocation" :key="location.oblast" :value="location.oblast">
-              {{ location.oblast }}
+          <select id="location" class="form-control" v-model="selectedRegion" @change="updateCities">
+            <option v-for="selectedRegion in getLocation" :key="selectedRegion.oblast" :value="selectedRegion.oblast">
+              {{ selectedRegion.oblast }}
             </option>
           </select>
         </div>
 
         <div class="col-md-3 mb-3">
           <label for="city" class="form-label">City</label>
-          <select id="city" class="form-control" v-model="city" :disabled="!location">
-            <option v-for="city in locations" :key="city" :value="city">{{ city }}</option>
+          <select id="city" class="form-control" v-model="city" :disabled="!selectedRegion">
+            <option v-for="city in regions" :key="city" :value="city">{{ city }}</option>
           </select>
         </div>
 
@@ -80,19 +80,21 @@
       <div class="row">
         <div class="col-md-4 mb-4" v-for="(item, index) in filteredItems" :key="index">
           <div class="card product-card shadow-sm border-0">
-            <img v-if="item.photoUrls && item.photoUrls.length" :src="item.photoUrls[0]"
+            <img v-if="item.images && item.images.length" :src="item.images[0]"
               class="card-img-top product-image">
             <div class="card-body">
               <h5 class="card-title">{{ item.productName }}</h5>
               <p class="card-text text-muted">{{ item.description }}</p>
               <h6 class="text-primary">${{ item.price }}</h6>
               <p class="text-muted small">{{ item.region }}</p>
-              
+
               <!-- Only show NotificationsComponent for the selected product -->
-              <notifications-component v-if="onOff && id === item.id" :id="id" :userEmail="email"></notifications-component>
-              
+              <notifications-component v-if="onOff && id === item.id" :id="id"
+                :userEmail="email"></notifications-component>
+
               <div class="d-flex justify-content-between align-items-center">
-                <button class="btn btn-outline-primary btn-sm" @click="addToFavoritesid(item.id)">Add to Favorites</button>
+                <button class="btn btn-outline-primary btn-sm" @click="addToFavoritesid(item.id)">Add to
+                  Favorites</button>
                 <div class="d-flex gap-2">
                   <button :id="item.id" class="btn btn-primary btn-sm" @click="onOFF(item.id, item.email)">Chat</button>
                   <router-link :to="{ name: 'prodCard', params: { id: item.id } }"
@@ -109,7 +111,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { getFirestore, doc, updateDoc, arrayUnion } from "firebase/firestore";
 import NotificationsComponent from './NotificationsComponent.vue';
 
 export default {
@@ -124,13 +125,13 @@ export default {
       onOff: false,
       searchString: "",
       items: [],
-      locations: [],
-      location: null,
+      regions: [],
       city: null,
       selectedCondition: "",
       minPrice: null,
       maxPrice: null,
       selectedCategory: null,
+      selectedRegion: null,
       categories: ['Real Estate', 'Automobile', 'Auto Parts', 'Home & Garden', 'Electronics', 'Baby & Kids', 'Education', 'Sport', 'Clothing', 'Jewelry', 'Antiques', 'Hardware', 'Services', 'Trading']
     };
   },
@@ -141,9 +142,9 @@ export default {
     ...mapGetters(['getLocation']),
     filteredItems() {
       return this.items.filter(item => {
-        const matchesSearch = !this.searchString || item.productName.toLowerCase().includes(this.searchString.toLowerCase());
-        const matchesLocation = !this.location || item.region === this.location;
-        const matchesCity = !this.city || item.city === this.city;
+        const matchesSearch = !this.searchString || item.name.toLowerCase().includes(this.searchString.toLowerCase());
+        const matchesLocation = !this.selectedRegion || item.region === this.selectedRegion;
+        const matchesCity = !this.city || item.location === this.city;
         const matchesCondition = this.selectedCondition === "all" || !this.selectedCondition || item.condition === this.selectedCondition;
         const matchesPrice = (!this.minPrice || item.price >= this.minPrice) && (!this.maxPrice || item.price <= this.maxPrice);
         const matchesCategory = !this.selectedCategory || item.category === this.selectedCategory;
@@ -153,42 +154,53 @@ export default {
   },
 
   methods: {
-    ...mapActions(['setOrder', 'setMyLiked']),
-    ...mapActions('todo', ['loadList']),
+    ...mapActions('PRODUCT_STORE', ['getDocumentFromFDB', 'updateDocumentInFDB']),
     onOFF(id, email) {
-      this.onOff = !this.onOff;
-      this.id = id;
-      this.email = email;
+      this.onOff = !this.onOff
+      this.id = id
+      this.email = email
     },
     updateCities() {
-      const selectedRegion = this.getLocation.find(location => location.oblast === this.location);
-      this.locations = selectedRegion ? selectedRegion.cities : [];
+      this.regions = this.selectedRegion ? this.selectedRegion.cities : [];
       this.city = null;
     },
     signOut() {
       this.$store.dispatch('auth/logout');
     },
     async getitems() {
-      await this.loadList();
-      this.items = this.getProductList.map(item => ({
-        ...item,
-        photoUrls: item.photoUrls || []
-      }));
+      this.items = await this.getDocumentFromFDB("PRODUCT_STORE","qnmnilljBNJsRawRgdeU");
+      console.log(this.items);
+      
     },
     setCategory(category) {
       this.selectedCategory = category;
     },
+
     async addToFavoritesid(id) {
-      this.setMyLiked(id);
-      const db = getFirestore();
-      const userRef = doc(db, "users", this.email);
-      await updateDoc(userRef, {
-        favorites: arrayUnion(id)
-      });
-    }
+      const liked = this.items.find(item => item.id = id)
+      this.updateDocumentInFDB("S64AWHz74Ua8E4ix9iMk", "favorites", "uFAOS", {
+        name: this.liked.name,
+        price: this.liked.price,
+        description: this.liked.description,
+        images: this.liked.images,
+        phone: this.liked.phone,
+        publisher: this.getUserName,
+        location: this.liked.location,
+        region: this.liked.region,
+        category: this.liked.category,
+        condition: this.liked.condition,
+        priceCondition: this.liked.priceCondition,
+        id: liked.id,
+        email: this.getUserEmail,
+      },)
+    },
+    setOrderr(id) {
+      this.setOrder(id);
+    },
+
   },
-  
-  mounted() {
+
+  created() {
     this.getitems();
   }
 };

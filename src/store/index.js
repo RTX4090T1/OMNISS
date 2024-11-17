@@ -1,6 +1,6 @@
 import { createStore } from "vuex";
 import auth from './auth';
-import todo from './todoItems';
+import PRODUCT_STORE from './CRUD';
 import upay from './payment';
 import uFAOS from './userAddsManager'
 
@@ -199,7 +199,7 @@ export default createStore({
   },
   modules: {
     auth,
-    todo,
+    PRODUCT_STORE,
     upay,
     uFAOS
   }
