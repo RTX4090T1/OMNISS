@@ -80,10 +80,9 @@
       <div class="row">
         <div class="col-md-4 mb-4" v-for="(item, index) in filteredItems" :key="index">
           <div class="card product-card shadow-sm border-0">
-            <img v-if="item.images && item.images.length" :src="item.images[0]"
-              class="card-img-top product-image">
+            <img v-if="item.images && item.images.length" :src="item.images[0]" class="card-img-top product-image">
             <div class="card-body">
-              <h5 class="card-title">{{ item.productName }}</h5>
+              <h5 class="card-title">{{ item.name }}</h5>
               <p class="card-text text-muted">{{ item.description }}</p>
               <h6 class="text-primary">${{ item.price }}</h6>
               <p class="text-muted small">{{ item.region }}</p>
@@ -141,6 +140,7 @@ export default {
     ...mapGetters('todo', ['getProductList']),
     ...mapGetters(['getLocation']),
     filteredItems() {
+      console.log('this.items:', this.items);
       return this.items.filter(item => {
         const matchesSearch = !this.searchString || item.name.toLowerCase().includes(this.searchString.toLowerCase());
         const matchesLocation = !this.selectedRegion || item.region === this.selectedRegion;
@@ -154,7 +154,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('PRODUCT_STORE', ['getDocumentFromFDB', 'updateDocumentInFDB']),
+    ...mapActions('PRODUCT_STORE', ['getDocumentFromFDB', 'updateDocumentInFDB', 'getItemFromFDB']),
     onOFF(id, email) {
       this.onOff = !this.onOff
       this.id = id
@@ -168,9 +168,18 @@ export default {
       this.$store.dispatch('auth/logout');
     },
     async getitems() {
-      this.items = await this.getDocumentFromFDB("PRODUCT_STORE","qnmnilljBNJsRawRgdeU");
-      console.log(this.items);
-      
+      try {
+        const result = await this.getItemFromFDB({
+          collectionName: 'PRODUCT_STORE',
+          document: 'qnmnilljBNJsRawRgdeU',
+          elementName: 'store'
+        });
+        console.log(result);
+        this.items = result
+        console.log(this.items);
+      } catch (error) {
+        console.error('Error fetching items:', error);
+      }
     },
     setCategory(category) {
       this.selectedCategory = category;

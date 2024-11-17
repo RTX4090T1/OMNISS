@@ -43,24 +43,29 @@ export default {
                 commit('setLoading', false)
             }
         },
-        async getDocumentFromFDB({ commit }, {collectionName, document}) {
-            commit('setError', null)
-            commit('setLoading', true)
+        async getDocumentFromFDB({ commit }, { collectionName, document }) {
+            commit('setError', null);
+            commit('setLoading', true);
             try {
-                const action = FDBOperations(collectionName)
-                return await action.getDocumentFromFDB(document)
+                const action = new FDBOperations(collectionName);
+                const docData = await action.getDocumentFromFDB(document);
+                console.log('Fetched document data:', docData);
+                return docData;
             } catch (error) {
-                commit('setError', error)
+                commit('setError', error);
             } finally {
-                commit('setLoading', false)
+                commit('setLoading', false);
             }
         },
-        async getItemFromFDB({ commit }, collectionName, document, elementName) {
+        async getItemFromFDB({ commit }, {collectionName, document, elementName}) {
             commit('setError', null)
             commit('setLoading', true)
             try {
                 const action = FDBOperations(collectionName)
-                return await action.getItemFromFDB(elementName, document)
+                const result = await action.getItemFromFDB(elementName, document)
+                console.log(result+"kfgklunvfhbmgfhfgvngrhrtvhrthrtg");
+                
+                return result
             } catch (error) {
                 commit('setError', error)
             } finally {

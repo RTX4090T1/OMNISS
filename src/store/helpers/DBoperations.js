@@ -12,6 +12,7 @@ class FDBOperations {
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const arrayData = docSnap.data()[elementName] || [];
+                console.log(arrayData);
                 return arrayData;
             } else {
                 console.error('No such document!');
@@ -27,6 +28,8 @@ class FDBOperations {
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const docData = docSnap.data() || {};
+                console.log(docData);
+                
                 return docData;
             } else {
                 console.error('No such document!');
