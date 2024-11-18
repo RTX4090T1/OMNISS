@@ -26,7 +26,7 @@
   <div v-if="selectedProduct" class="product-card card mb-4 shadow-sm mx-auto">
     <div :id="'carousel-' + selectedProduct.id" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-inner">
-        <div class="carousel-item" :class="{ active: i === 0 }" v-for="(photo, i) in photos" :key="i">
+        <div class="carousel-item" :class="{ active: i === 0 }" v-for="(photo, i) in selectedProduct.images" :key="i">
           <img :src="photo" class="d-block w-100" alt="Product Image">
         </div>
       </div>
@@ -43,7 +43,7 @@
     </div>
 
     <div class="card-body text-center">
-      <h3 class="card-title product-name">{{ selectedProduct.productName }}</h3>
+      <h3 class="card-title product-name">{{ selectedProduct.name }}</h3>
       <div class="product-details d-flex justify-content-between">
         <p class="price">Price: {{ selectedProduct.price }}</p>
         <p class="condition">Condition: {{ selectedProduct.condition }}</p>
@@ -51,9 +51,9 @@
       </div>
       <p class="card-text location">Location: {{ selectedProduct.region }}</p>
       <p class="card-text publisher">Publisher: {{ selectedProduct.publisher }}</p>
-      <p class="card-text publisher-phone">Publisher Phone: {{ selectedProduct.phoneNumber }}</p>
+      <p class="card-text publisher-phone">Publisher Phone: {{ selectedProduct.phone }}</p>
       <p class="card-text description">Description: {{ selectedProduct.description }}</p>
-      <router-link @click="setOrderr(selectedProduct.id)" to="/pay" class="btn btn-primary w-100">Order</router-link>
+      <router-link  :to="{ name: 'pay', params: { id: id }}" class="btn btn-primary w-100">Order</router-link>
       <button @click="addToFavorites" class="btn btn-outline-secondary w-100 mt-2">Add to Favorites</button>
     </div>
   </div>
@@ -61,81 +61,63 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { getFirestore, doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 
 export default {
   name: "ProductCardComponent",
   props: ['id'],
   data() {
     return {
-      products: [],
       selectedProduct: null,
       photos: []
     };
   },
   computed: {
-    ...mapGetters('todo', ['getProductList']),
     ...mapGetters('auth', ['getUserName', 'getUserEmail']),
-    ...mapGetters(['getLocation', 'getActive']),
   },
   methods: {
-    ...mapActions(['setOrder']),
+    ...mapActions('PRODUCT_STORE', ['getItemFromFDB','updateItemInFDB']),
 
-    async loadProducts() {
-      try {
-        const db = getFirestore();
-        const docRef = doc(db, "todo", "AHZWnRmOg9CQtYZmf2bA");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const arrayData = docSnap.data().allAds || [];
-          this.products = arrayData;
-          this.getSelected();
-        } else {
-          console.error("No such document!");
-        }
-      } catch (error) {
-        console.error("Error fetching document:", error);
-      }
+    async loadProduct() {
+      var selected = await this.getItemFromFDB({
+        collectionName: 'PRODUCT_STORE',
+        document: 'qnmnilljBNJsRawRgdeU',
+        elementName: 'store'
+      })
+      this.selectedProduct = selected.find(item => item.id == this.id)
     },
-    getSelected() {
-      this.selectedProduct = this.products.find(
-        prod => prod.id == this.id
-      );
-      if (this.selectedProduct) {
-        this.photos = this.selectedProduct.photoUrls;
-      } else {
-        console.error("Product not found.");
-      }
-    },
+
     async addToFavorites() {
-      try {
-        const db = getFirestore();
-        const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-        const element = this.getProductList.find(prod => prod.id === this.id);
-        if (element) {
-          await updateDoc(docRef, {
-            favorites: arrayUnion({
-              ...element,
-              email: this.getUserEmail
-            })
-          });
-        } else {
-          console.log("Product not found in product list.");
-        }
-      } catch (error) {
-        console.error("Error adding to favorites:", error);
+      
+      var favorite = {
+        name: this.selectedProduct.name,
+        price: this.selectedProduct.price,
+        description: this.selectedProduct.description,
+        images: this.selectedProduct.images,
+        phone: this.selectedProduct.phone,
+        publisher: this.getUserName,
+        location: this.selectedProduct.location,
+        region: this.selectedProduct.region,
+        category: this.selectedProduct.category,
+        condition: this.selectedProduct.condition,
+        priceCondition: this.selectedProduct.priceCondition,
+        id: this.selectedProduct.id,
+        email: this.getUserEmail,
       }
+      this.updateItemInFDB({
+        collectionName: "uFAOS",
+        document: "S64AWHz74Ua8E4ix9iMk",
+        arrayName: "favorites",
+        newElement: favorite
+      })
     },
+
     signOut() {
       this.$store.commit('auth/CLEAR_USER_DATA');
       this.$router.push('/');
     },
-    setOrderr(id) {
-      this.setOrder(id);
-    }
   },
   created() {
-    this.loadProducts();
+    this.loadProduct();
   }
 };
 </script>

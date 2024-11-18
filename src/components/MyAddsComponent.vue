@@ -29,26 +29,24 @@
                     <div class="col-md-4" v-for="(item, index) in myAds" :key="index">
                         <div class="card ad-card mb-4 shadow-sm">
                             <div class="card-body">
-                                <div class="card-img-top" v-if="item.photoUrls && item.photoUrls.length > 0">
-                                    <img :src="item.photoUrls[0]" class="card-img" alt="Product Image">
+                                <div class="card-img-top" v-if="item.images && item.images.length > 0">
+                                    <img :src="item.images[0]" class="card-img" alt="Product Image">
                                 </div>
-                                <h5 class="card-title ad-name">{{ item.productName }}</h5>
+                                <h5 class="card-title ad-name">{{ item.name }}</h5>
                                 <p class="card-text price">Price: {{ item.price }}</p>
                                 <p class="card-text category">Category: {{ item.category }}</p>
                                 <p class="card-text description">Description: {{ item.description }}</p>
                                 <p class="card-text publisher">Publisher: {{ item.publisher }}</p>
                                 <p class="card-text condition">Condition: {{ item.condition }}</p>
-                                <p class="card-text orderer">Orderer: {{ item.email }}</p>
-                                <p class="card-text location">Location: {{ item.location }}</p>
-                                <p class="card-text city">City: {{ item.city }}</p>
+                                <p class="card-text orderer">Owner: {{ item.email }}</p>
+                                <p class="card-text location">Location: {{ item.region }}</p>
+                                <p class="card-text city">City: {{ item.location }}</p>
                             </div>
                             <div class="card-footer text-center">
-                                <router-link :id="index" @click="setId(item.id)" to="/redact"
+                                <router-link :id="index"  :to="{ name: 'redact', params: { ids: item.id } }"
                                     class="btn btn-outline-primary btn-sm">Redact</router-link>
-                                <button :id="index" @click="deletee" class="btn btn-outline-danger btn-sm ml-2">Delete
-                                    App</button>
-                                <button v-if="tf" :id="index" @click="deleteApp(index)"
-                                    class="btn btn-outline-danger btn-sm ml-2">Comfirm</button>
+                                <button  :id="index" @click="deleteApp(item.id)"
+                                    class="btn btn-outline-danger btn-sm ml-2">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -63,7 +61,6 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { getFirestore, arrayRemove, doc, updateDoc, getDoc } from "firebase/firestore";
 
 export default {
     name: "MyAddsComponent",
@@ -75,23 +72,17 @@ export default {
         };
     },
     computed: {
-        ...mapGetters('todo', ['getProductList']),
-        ...mapGetters(['getTotalyOrdered', 'getToRedact']),
-        ...mapGetters('uFAOS', ['getOrdered']),
         ...mapGetters('auth', ['getUserEmail'])
     },
     methods: {
-        ...mapActions('todo', ['deleteItem']),
-        ...mapActions(['setRedact']),
+        ...mapActions('PRODUCT_STORE', ['getItemFromFDB','deleteItemFromFDB']),
 
         async showMyItems() {
             try {
-                const db = getFirestore();
-                const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const arrayData = docSnap.data().selfAdds || [];
-                    this.myAds = arrayData.filter(order => order.email === this.getUserEmail);
+               let items = await this.getItemFromFDB({collectionName:"PRODUCT_STORE", document:"qnmnilljBNJsRawRgdeU", elementName: "store"})
+
+                if (items) {
+                    this.myAds = items.filter(order => order.email === this.getUserEmail);
                 } else {
                     console.error("No such document!");
                 }
@@ -99,35 +90,15 @@ export default {
                 console.error("Error fetching document:", error);
             }
         },
-        async deleteApp(index) {
+        async deleteApp(id) {
             try {
-                const itemToDelete = this.myAds[index];
-                const db = getFirestore();
-
-                // Delete from selfAdds array
-                const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-                await updateDoc(docRef, {
-                    selfAdds: arrayRemove(itemToDelete)
-                });
-
-                // Delete from allAdds array
-                const docRefAllAdds = doc(db, "todo", "AHZWnRmOg9CQtYZmf2bA");
-                await updateDoc(docRefAllAdds, {
-                    allAds: arrayRemove(itemToDelete)
-                });
-
+                let element = this.myAds.find(item => item.id == id)
+                await this.deleteItemFromFDB({collectionName:"uFAOS", document:"S64AWHz74Ua8E4ix9iMk", field:"selfAdds", elementName:element})
+                await this.deleteItemFromFDB({collectionName:"PRODUCT_STORE", document:"qnmnilljBNJsRawRgdeU", field:"store", elementName:element})
                 this.showMyItems();
-                this.deleteItem(itemToDelete.id);
             } catch (error) {
                 console.error("Error removing app:", error);
             }
-        },
-        deletee() {
-            this.tf = !this.tf;
-        },
-        setId(id) {
-            this.setRedact(id);
-            console.log(this.getToRedact);
         },
     },
     created() {

@@ -27,7 +27,7 @@
       <form @submit.prevent="publishProduct" class="card p-4 shadow-sm">
         <div class="mb-3">
           <label for="productName" class="form-label">Product Name</label>
-          <input type="text" class="form-control" id="productName" v-model="ad.productName" required />
+          <input type="text" class="form-control" id="productName" v-model="ad.name" required />
         </div>
 
         <div class="mb-3">
@@ -42,7 +42,7 @@
 
         <div class="mb-3">
           <label for="pnumber" class="form-label">Use your phone number or email to contact with clients</label>
-          <input type="text" class="form-control" id="pnumber" v-model="ad.phoneNumber" required />
+          <input type="text" class="form-control" id="pnumber" v-model="ad.phone" required />
         </div>
 
         <div class="mb-3">
@@ -87,7 +87,7 @@
         <!-- Location (Oblast) Select Menu -->
         <div class="mb-3">
           <label for="location" class="form-label">Region</label>
-          <select id="location" class="form-control" v-model="ad.location" @change="updateCities">
+          <select id="location" class="form-control" v-model="ad.region" @change="updateCities">
             <option v-for="location in getLocation" :key="location.oblast" :value="location.oblast">
               {{ location.oblast }}
             </option>
@@ -97,15 +97,14 @@
         <!-- City Select Menu (Updates Based on Location) -->
         <div class="mb-3" v-if="filteredCities.length">
           <label for="city" class="form-label">City</label>
-          <select id="city" class="form-control" v-model="ad.city">
+          <select id="city" class="form-control" v-model="ad.location">
             <option v-for="city in filteredCities" :key="city" :value="city">{{ city }}</option>
           </select>
         </div>
 
-        <div v-if="ad.photoUrls.length > 0" id="carouselExampleIndicators" class="carousel slide"
-          data-bs-ride="carousel">
+        <div v-if="ad.images.length > 0" id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
-            <div class="carousel-item" v-for="(image, index) in ad.photoUrls" :key="index"
+            <div class="carousel-item" v-for="(image, index) in ad.images" :key="index"
               :class="{ active: index === 0 }">
               <img :src="image" class="d-block w-100" alt="Uploaded Image">
             </div>
@@ -131,7 +130,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { getFirestore, doc, updateDoc, arrayUnion } from "firebase/firestore";
 
 export default {
   name: "AddAppComponent",
@@ -139,17 +137,19 @@ export default {
     return {
       error: null,
       ad: {
+        name: "",
+        price: "",
+        description: "",
+        images: [],
+        phone: "",
+        publisher: "",
+        location: "",
+        region: "",
         category: "",
-        state: "",
-        productName: "",
-        price: null,
         condition: "",
         priceCondition: "",
-        description: "",
-        phoneNumber: null,
-        location: "",
-        city: "",
-        photoUrls: []
+        id: "",
+        email: "",
       },
       filteredCities: [],
       ids: null
@@ -160,10 +160,10 @@ export default {
     ...mapGetters('auth', ['getUserName', 'getUserEmail'])
   },
   methods: {
-    ...mapActions('todo', ['addItem']),
+    ...mapActions('PRODUCT_STORE', ['updateItemInFDB']),
     updateCities() {
-      const selectedOblast = this.getLocation.find(location => location.oblast === this.ad.location);
-      this.filteredCities = selectedOblast ? selectedOblast.cities : [];
+      const selectedOblast = this.getLocation.find(location => location.oblast === this.ad.region);
+      this.filteredCities = selectedOblast ? selectedOblast.location : [];
     },
     generateRandomId() {
       var length = 10;
@@ -178,22 +178,28 @@ export default {
     async publishProduct() {
       var ids = this.generateRandomId();
       try {
-        await this.addItem(
-          {
-            productName: this.ad.productName,
-            price: this.ad.price,
-            description: this.ad.description,
-            photoUrls: this.ad.photoUrls,
-            phoneNumber: this.ad.phoneNumber,
-            publisher: this.getUserName,
-            city: this.ad.city,
-            region: this.ad.location,
-            category: this.ad.category,
-            condition: this.ad.condition,
-            priceCondition: this.ad.priceCondition,
-            id: ids,
-            email: this.getUserEmail,
-          },
+        let item = {
+          name: this.ad.name,
+          price: this.ad.price,
+          description: this.ad.description,
+          images: this.ad.images,
+          phone: this.ad.phone,
+          publisher: this.getUserName,
+          location: this.ad.location,
+          region: this.ad.region,
+          category: this.ad.category,
+          condition: this.ad.condition,
+          priceCondition: this.ad.priceCondition,
+          id: ids,
+          email: this.getUserEmail,
+          date: new Date().toLocaleString()
+        }
+        await this.updateItemInFDB({
+          collectionName: 'PRODUCT_STORE',
+          document: "qnmnilljBNJsRawRgdeU",
+          arrayName: "store",
+          newElement: item
+        }
         );
         this.addToMyAdds(ids);
       }
@@ -203,26 +209,29 @@ export default {
     },
     async addToMyAdds(ids) {
       ids = ids.toString();
-      const db = getFirestore();
-      const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-      await updateDoc(docRef, {
-        selfAdds: arrayUnion({
-          productName: this.ad.productName,
-          price: this.ad.price,
-          description: this.ad.description,
-          phoneNumber: this.ad.phoneNumber,
-          publisher: this.getUserName,
-          city: this.ad.city,
-          region: this.ad.location,
-          category: this.ad.category,
-          condition: this.ad.condition,
-          priceCondition: this.ad.priceCondition,
-          email: this.getUserEmail,
-          id: ids,
-          photoUrls: this.ad.photoUrls
-        }),
-      });
-      this.$router.push('/account');
+      let item = {
+        name: this.ad.name,
+        price: this.ad.price,
+        description: this.ad.description,
+        images: this.ad.images,
+        phone: this.ad.phone,
+        publisher: this.getUserName,
+        location: this.ad.location,
+        region: this.ad.region,
+        category: this.ad.category,
+        condition: this.ad.condition,
+        priceCondition: this.ad.priceCondition,
+        id: ids,
+        email: this.getUserEmail,
+        date: new Date().toLocaleString()
+      }
+      await this.updateItemInFDB({
+        collectionName: "uFAOS",
+        document: "S64AWHz74Ua8E4ix9iMk",
+        arrayName: "selfAdds",
+        newElement: item
+      }),
+        this.$router.push('/account');
     },
     async uploadImage(event) {
       const files = event.target.files;
@@ -237,7 +246,7 @@ export default {
             body: formData,
           });
           const data = await response.json();
-          this.ad.photoUrls.push(data.data.url);
+          this.ad.images.push(data.data.url);
         } catch (error) {
           console.error('Error uploading image:', error);
         }

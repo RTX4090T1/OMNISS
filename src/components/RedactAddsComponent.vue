@@ -21,17 +21,14 @@
           </li>
         </ul>
       </div>
-      <button class="btn btn-light rounded-circle profile-btn ms-3">
-        <i class="bi bi-person-circle fs-4"></i>
-        <figcaption>{{ getUserName || 'Guest' }}</figcaption>
-      </button>
+
     </header>
 
     <div class="container mt-5">
       <form @submit.prevent="handleEdit" class="card p-4 shadow-sm">
         <div class="mb-3">
           <label for="productName" class="form-label">Product Name</label>
-          <input type="text" class="form-control" id="productName" v-model="ad.productName" required />
+          <input type="text" class="form-control" id="productName" v-model="ad.name" required />
         </div>
 
         <div class="mb-3">
@@ -46,7 +43,7 @@
 
         <div class="mb-3">
           <label for="pnumber" class="form-label">Use your phone number or email to contact with clients</label>
-          <input type="text" class="form-control" id="pnumber" v-model="ad.phoneNumber" required />
+          <input type="text" class="form-control" id="pnumber" v-model="ad.phone" required />
         </div>
 
         <!-- Price Condition Radio Buttons -->
@@ -86,7 +83,7 @@
         <!-- Location (Oblast) Select Menu -->
         <div class="mb-3">
           <label for="location" class="form-label">Region</label>
-          <select id="location" class="form-control" v-model="ad.location" @change="updateCities">
+          <select id="location" class="form-control" v-model="ad.region" @change="updateCities">
             <option v-for="location in getLocation" :key="location.oblast" :value="location.oblast">
               {{ location.oblast }}
             </option>
@@ -96,7 +93,7 @@
         <!-- City Select Menu (Updates Based on Location) -->
         <div class="mb-3" v-if="filteredCities.length">
           <label for="city" class="form-label">City</label>
-          <select id="city" class="form-control" v-model="ad.city">
+          <select id="city" class="form-control" v-model="ad.location">
             <option v-for="city in filteredCities" :key="city" :value="city">{{ city }}</option>
           </select>
         </div>
@@ -108,10 +105,9 @@
         </div>
 
         <!-- Carousel for uploaded photos -->
-        <div v-if="ad.photos.length > 0" id="carouselExampleIndicators" class="carousel slide"
-          data-bs-ride="carousel">
+        <div v-if="ad.images.length > 0" id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
-            <div class="carousel-item" v-for="(photo, index) in ad.photos" :key="index"
+            <div class="carousel-item" v-for="(photo, index) in ad.images" :key="index"
               :class="{ active: index === 0 }">
               <img :src="photo" class="d-block w-100" alt="Uploaded Image">
             </div>
@@ -136,26 +132,30 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import { getFirestore, doc, updateDoc, arrayUnion, arrayRemove, getDoc } from "firebase/firestore";
+
 
 export default {
   name: "RedactAddsComponent",
+  props: ['ids'],
   data() {
     return {
       ad: {
-        productName: "",
-        price: null,
+        name: "",
+        price: "",
         description: "",
-        phoneNumber: null,
         images: [],
-        priceCondition: "",
-        condition: "",
-        category: "",
+        phone: "",
+        publisher: "",
         location: "",
-        city: "",
-        photos: []
+        region: "",
+        category: "",
+        condition: "",
+        priceCondition: "",
+        id: "",
+        email: "",
       },
-      filteredCities: []
+      filteredCities: [],
+      redactedItem: null,
     };
   },
   computed: {
@@ -163,74 +163,32 @@ export default {
     ...mapGetters('auth', ['getUserName', 'getUserEmail', 'setRedact'])
   },
   methods: {
-    ...mapActions('todo', ['updateItemInArray']),
+    ...mapActions('PRODUCT_STORE', ['updateElementInArray',]),
     updateCities() {
-      const selectedOblast = this.getLocation.find(location => location.oblast === this.ad.location);
-      this.filteredCities = selectedOblast ? selectedOblast.cities : [];
+      const selectedOblast = this.getLocation.find(location => location.oblast === this.ad.region);
+      this.filteredCities = selectedOblast ? selectedOblast.location : [];
     },
     async handleEdit() {
-      var docId = 'AHZWnRmOg9CQtYZmf2bA';
-      var itemId = this.getToRedact;
+      console.log(this.ids);
+      
       try {
-        await this.updateItemInArray({
-          docId: docId,
-          itemId: itemId,
-          data: {
-            productName: this.ad.productName,
-            price: this.ad.price,
-            description: this.ad.description,
-            phoneNumber: this.ad.phoneNumber,
-            publisher: this.getUserName,
-            city: this.ad.city,
-            region: this.ad.location,
-            category: this.ad.category,
-            condition: this.ad.condition,
-            priceCondition: this.ad.priceCondition,
-            email: this.getUserEmail,
-            photos: this.ad.photos
-          }
-        });
-
-        const db = getFirestore();
-        const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-
-        console.log(this.getToRedact);
-
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          const exactItem = data.selfAdds.find(item => item.id === itemId);
-
-          if (exactItem) {
-            await updateDoc(docRef, {
-              selfAdds: arrayRemove(exactItem)
-            });
-
-            await updateDoc(docRef, {
-              selfAdds: arrayUnion({
-                id: itemId,
-                productName: this.ad.productName,
-                price: this.ad.price,
-                description: this.ad.description,
-                phoneNumber: this.ad.phoneNumber,
-                publisher: this.getUserName,
-                city: this.ad.city,
-                region: this.ad.location,
-                category: this.ad.category,
-                condition: this.ad.condition,
-                priceCondition: this.ad.priceCondition,
-                email: this.getUserEmail,
-                photos: this.ad.photos
-              })
-            });
-          } else {
-            console.error("Item not found");
-          }
-        } else {
-          console.error("No such document!");
+        this.redactedItem = {
+          name: this.ad.name,
+          price: this.ad.price,
+          description: this.ad.description,
+          images: this.ad.images,
+          phone: this.ad.phone,
+          publisher: this.getUserName,
+          location: this.ad.location,
+          region: this.ad.region,
+          category: this.ad.category,
+          condition: this.ad.condition,
+          priceCondition: this.ad.priceCondition,
+          id: this.ids,
+          email: this.getUserEmail,
+          date: new Date().toLocaleString()
         }
-
-        this.$router.push('/account');
+        await this.updateElementInArray({ collectionName: "PRODUCT_STORE", document: "qnmnilljBNJsRawRgdeU", field: "store", newElement: this.redactedItem })
       } catch (error) {
         console.error("An error occurred while processing your request:", error);
       }
@@ -251,7 +209,7 @@ export default {
     }
   },
   created() {
-    console.log(this.getToRedact);
+
   }
 };
 </script>

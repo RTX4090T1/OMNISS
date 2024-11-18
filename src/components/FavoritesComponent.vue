@@ -62,21 +62,39 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('auth', ['getUserEmail'])
+    ...mapGetters('auth', ['getUserEmail','getUserName'])
   },
   methods: {
     ...mapActions('PRODUCT_STORE', ['deleteItemFromFDB', 'getItemFromFDB', 'updateItemInFDB']),
 
     async deleteApp(id) {
-      const itemToDelete = this.likedItems.find(item => item.id = id)
+      const getToDelete = this.likedItems.find(item => item.id == id)
+      const itemToDelete = {
+        name: getToDelete.name,
+        price: getToDelete.price,
+        description: getToDelete.description,
+        images: getToDelete.images,
+        phone: getToDelete.phone,
+        publisher: this.getUserName,
+        location: getToDelete.location,
+        region: getToDelete.region,
+        category:getToDelete.category,
+        condition: getToDelete.condition,
+        priceCondition: getToDelete.priceCondition,
+        id: getToDelete.id,
+        email: this.getUserEmail,
+      }
+      console.log(itemToDelete);
+      
       this.deleteItemFromFDB({collectionName:"uFAOS", document:"S64AWHz74Ua8E4ix9iMk", field:"favorites",elementName:itemToDelete})
+      this.showMyItems();
     },
     async showMyItems() {
       this.likedItems = await this.getItemFromFDB({collectionName: "uFAOS",
        document: "S64AWHz74Ua8E4ix9iMk",
         elementName: "favorites"})
       this.likedItems = this.likedItems.filter(item => item.email == this.getUserEmail)
-    }
+    },
   },
   created() {
     this.showMyItems();

@@ -2,6 +2,13 @@
   <div class="main-container text-dark min-vh-100">
     <header class="main-header d-flex justify-content-between align-items-center px-4 py-3 shadow">
       <h1 class="text-primary">Omnis</h1>
+      <span class="text-primary px-4">Where Deals Meet Dreams.</span>
+      <div class="search-section d-flex justify-content-center align-items-center my-3 px-5">
+        <form label-for="search" label="Find">
+          <input type="text" id="search" v-model="searchString" placeholder="Omnis..."
+            class="form-control search-input">
+        </form>
+      </div>
       <div class="dropdown ms-auto">
         <button class="btn btn-light dropdown-toggle" type="button" id="setting" data-bs-toggle="dropdown"
           aria-expanded="false">
@@ -29,11 +36,6 @@
         @click="setCategory(category)">{{ category }}</button>
     </div>
 
-    <div class="search-section d-flex justify-content-center align-items-center my-3">
-      <form label-for="search" label="Find">
-        <input type="text" id="search" v-model="searchString" placeholder="Omnis..." class="form-control search-input">
-      </form>
-    </div>
 
     <div class="filters-container container py-3">
       <div class="row">
@@ -184,13 +186,10 @@ export default {
     setCategory(category) {
       this.selectedCategory = category;
     },
-    
+
     async addToFavoritesid(id) {
-      console.log(id);
-      
       const liked = this.items.find(item => item.id = id)
-      console.log(liked);
-      
+
       var favorite = {
         name: liked.name,
         price: liked.price,
@@ -200,25 +199,19 @@ export default {
         publisher: this.getUserName,
         location: liked.location,
         region: liked.region,
-        category:liked.category,
+        category: liked.category,
         condition: liked.condition,
         priceCondition: liked.priceCondition,
         id: liked.id,
         email: this.getUserEmail,
       }
-      var result = this.updateItemInFDB({
-         collectionName: "uFAOS",
-         document: "S64AWHz74Ua8E4ix9iMk",
-         arrayName: "favorites",
-         newElement: favorite 
+      this.updateItemInFDB({
+        collectionName: "uFAOS",
+        document: "S64AWHz74Ua8E4ix9iMk",
+        arrayName: "favorites",
+        newElement: favorite
       })
-      console.log(result);
-      
     },
-    setOrderr(id) {
-      this.setOrder(id);
-    },
-
   },
 
   created() {

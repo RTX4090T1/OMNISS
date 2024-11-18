@@ -30,14 +30,17 @@
             <div class="card text-white mb-3">
               <div class="card-img-top">
                 <!-- Display the first image in the item.photos array -->
-                <img :src="item.photoUrls[0]" class="card-img" alt="Product Image">
+                <img :src="item.images[0]" class="card-img" alt="Product Image">
               </div>
               <div class="card-body">
-                <h5 class="card-title">{{ item.productName }}</h5>
+                <h5 class="card-title">{{ item.name }}</h5>
                 <p class="card-text">Price: {{ item.price }}</p>
                 <p class="card-text">Description: {{ item.description }}</p>
                 <p class="card-text">Condition: {{ item.condition }}</p>
-                <p class="card-text">Phone: {{ item.pNumber }}</p>
+                <p class="card-text">Date: {{ item.date }}</p>
+                <p class="card-text">Email: {{ item.email }}</p>
+                <p class="card-text">Publisher: {{ item.publisher }}</p>
+                <p class="card-text">Phone: {{ item.phone }}</p>
               </div>
             </div>
           </div>
@@ -51,8 +54,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
     name: "MyOrdersComponent",
@@ -63,25 +65,15 @@ export default {
         };
     },
     computed: {
-        ...mapGetters('todo', ['getProductList']),
-        ...mapGetters(['getTotalyOrdered', 'setAction']),
-        ...mapGetters('uFAOS', ['getOrdered']),
         ...mapGetters('auth', ['getUserEmail'])
     },
 
     methods: {
+      ...mapActions('PRODUCT_STORE',['getItemFromFDB']),
         async showMyItems() {
             try {
-                console.log(this.getUserEmail);
-                const db = getFirestore();
-                const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    const arrayData = docSnap.data().orders || [];
-                    this.myOrders = arrayData.filter(order => order.email === this.getUserEmail);
-                } else {
-                    console.error("No such document!");
-                }
+              let items = await this.getItemFromFDB( {collectionName:"uFAOS", document:"S64AWHz74Ua8E4ix9iMk", elementName:"orders"})
+              this.myOrders = items.filter(item => item.email == this.getUserEmail)
             } catch (error) {
                 console.error("Error fetching document:", error);
             }

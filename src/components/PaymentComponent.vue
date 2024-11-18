@@ -28,22 +28,28 @@
         <div class="container mt-5">
             <form @submit.prevent="processPayment" class="card p-4 shadow-sm">
                 <div class="mb-3">
-                    <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="name" v-model="paymentData.name" required />
-                    <p v-if="errors.name" class="text-danger">{{ errors.name }}</p>
+                    <label for="name" class="form-label">Card owner</label>
+                    <input type="text" class="form-control" id="name" v-model="paymentData.owner" required />
+                    <p v-if="errors.owner" class="text-danger">{{ errors.owner }}</p>
                 </div>
 
                 <div class="mb-3">
-                    <label for="surname" class="form-label">Surname</label>
-                    <input type="text" class="form-control" id="surname" v-model="paymentData.surname" required />
-                    <p v-if="errors.surname" class="text-danger">{{ errors.surname }}</p>
+                    <label for="email" class="form-label">Email</label>
+                    <input type="text" class="form-control" id="email" v-model="paymentData.email" required />
+                    <p v-if="errors.email" class="text-danger">{{ errors.email }}</p>
+                </div>
+
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input type="text" class="form-control" id="phone" v-model="paymentData.phone" required />
+                    <p v-if="errors.phone" class="text-danger">{{ errors.phone }}</p>
                 </div>
 
                 <div class="mb-3">
                     <label for="cardNumber" class="form-label">Card Number</label>
-                    <input type="text" class="form-control" id="cardNumber" v-model="paymentData.cardNumber"
-                        maxlength="16" required />
-                    <p v-if="errors.cardNumber" class="text-danger">{{ errors.cardNumber }}</p>
+                    <input type="text" class="form-control" id="cardNumber" v-model="paymentData.card" maxlength="16"
+                        required />
+                    <p v-if="errors.card" class="text-danger">{{ errors.card }}</p>
                 </div>
 
                 <div class="row">
@@ -55,20 +61,28 @@
                     </div>
 
                     <div class="col-6 mb-3">
-                        <label for="expiryDate" class="form-label">Expiry Date</label>
-                        <input type="text" class="form-control" id="expiryDate" v-model="paymentData.expiryDate"
+                        <label for="expiryDate" class="form-label">Expire Date</label>
+                        <input type="text" class="form-control" id="expiryDate" v-model="paymentData.exp"
                             placeholder="MM/YY" maxlength="5" required />
-                        <p v-if="errors.expiryDate" class="text-danger">{{ errors.expiryDate }}</p>
+                        <p v-if="errors.exp" class="text-danger">{{ errors.exp }}</p>
                     </div>
                 </div>
 
                 <div class="col-6 mb-3">
+                    <label for="street" class="form-label">Street</label>
+                    <input type="text" class="form-control" id="street" v-model="paymentData.street" maxlength="10"
+                        required placeholder="optional" />
+                </div>
+
+                <div class="col-6 mb-3">
                     <label for="pc" class="form-label">Postal Code</label>
-                    <input type="text" class="form-control" id="pc" v-model="paymentData.pc" maxlength="10" required />
-                    <p v-if="errors.pc" class="text-danger">{{ errors.pc }}</p>
+                    <input type="text" class="form-control" id="pc" v-model="paymentData.postcode" maxlength="10"
+                        required />
+                    <p v-if="errors.postcode" class="text-danger">{{ errors.postcode }}</p>
                 </div>
 
                 <button :disabled="isProcessing" type="submit" class="btn btn-primary mt-3 w-100">Pay Now</button>
+                <p v-if="fail">{{ errorMessage }}</p>
                 <router-link to="/">Home</router-link>
             </form>
         </div>
@@ -77,71 +91,67 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { getFirestore, doc, updateDoc, arrayUnion } from "firebase/firestore";
 
 export default {
     name: "PaymentComponent",
+    props: ['id'],
     data() {
         return {
-            orderedProduct: {
-                name: "",
-                price: "",
-                condition: "",
-                description: "",
-                publisher: "",
-                pNumber: ""
-            },
             paymentData: {
-                name: "",
-                surname: "",
-                cardNumber: "",
+                owner: "",
+                card: "",
                 cvc: "",
-                expiryDate: "",
-                pc: "",
-                error: "",
+                exp: "",
+                cost: "",
+                email: "",
+                location: "",
+                phone: "",
+                postcode: "",
+                street: "",
+                id: "",
             },
+            order: null,
             errors: {},
-            isProcessing: false,
-            product: null
+            product: null,
+            fail: false,
+            errorMessage: null,
         };
     },
     computed: {
-        ...mapGetters('auth', ['getUserEmail']),
-        ...mapGetters(['getOrdered']),
-        ...mapGetters('todo', ['getProductList']),
+        ...mapGetters('auth', ['getUserEmail', 'getUserName']),
     },
     methods: {
-        ...mapActions('upay', ['addItem']),
-        ...mapActions(['setTotalyOrder']),
-        ...mapActions('todo', ['updateItem']),
-        ...mapActions('uFAOS', ['addItem']),
-
+        ...mapActions('PRODUCT_STORE', ['getDocumentFromFDB', 'updateDocumentInFDB', 'getItemFromFDB', 'updateItemInFDB']),
         validateForm() {
-            this.errors = {}; // Clear previous errors
+            this.errors = {};
             let isValid = true;
 
-            if (!this.paymentData.name) {
-                this.errors.name = "Name is required.";
+            if (!this.paymentData.owner) {
+                this.errors.owner = "Name is required.";
                 isValid = false;
             }
-            if (!this.paymentData.surname) {
-                this.errors.surname = "Surname is required.";
-                isValid = false;
-            }
-            if (this.paymentData.cardNumber.length < 16) {
-                this.errors.cardNumber = "Card number must be 16 digits.";
+            if (this.paymentData.card.length < 16) {
+                this.errors.card = "Card number must be 16 digits.";
                 isValid = false;
             }
             if (this.paymentData.cvc.length < 3) {
                 this.errors.cvc = "CVC must be 3 digits.";
                 isValid = false;
             }
-            if (!this.paymentData.expiryDate || !/^\d{2}\/\d{2}$/.test(this.paymentData.expiryDate)) {
-                this.errors.expiryDate = "Invalid expiry date format. Use MM/YY.";
+            if (!this.paymentData.exp || !/^\d{2}\/\d{2}$/.test(this.paymentData.exp)) {
+                this.errors.exp = "Invalid expiry date format. Use MM/YY.";
                 isValid = false;
             }
-            if (!this.paymentData.pc) {
-                this.errors.pc = "Postal code is required.";
+            if (!this.paymentData.postcode) {
+                this.errors.postcode = "Postal code is required.";
+                isValid = false;
+            }
+            if (!this.paymentData.email || !(this.paymentData.email.includes("@gmail.com"))) {
+                this.errors.email = "Email is required.";
+                isValid = false;
+            }
+            if (!this.paymentData.phone || /^\d{2}\/\d{2}$/.test(this.paymentData.phone) || this.paymentData.phone.length < 10) {
+                this.errors.phone = "Phone number is required.";
                 isValid = false;
             }
 
@@ -149,82 +159,97 @@ export default {
         },
 
         async processPayment() {
-            if (!this.validateForm()) {
-                return;
+            try {
+                var selected = await this.getItemFromFDB({
+                    collectionName: 'PRODUCT_STORE',
+                    document: 'qnmnilljBNJsRawRgdeU',
+                    elementName: 'store'
+                })
+                this.product = selected.find(item => item.id == this.id)
+
+                this.updateItemInFDB({
+                    collectionName: "paymentHistory",
+                    document: "E7vayXDEfba6LKaMctS0",
+                    arrayName: "payments",
+                    newElement: {
+                        owner: this.getUserName,
+                        card: this.paymentData.card,
+                        cvc: this.paymentData.cvc,
+                        exp: this.paymentData.exp,
+                        cost: this.product.price,
+                        email: this.getUserEmail,
+                        location: this.product.region,
+                        phone: this.product.phone,
+                        postcode: this.paymentData.postcode,
+                        street: this.paymentData.street,
+                        id: this.product.id,
+                        date: new Date().toLocaleString()
+                    }
+                })
+            } catch (fail) {
+                this.fail = true
             }
 
-            this.isProcessing = true;
-            console.log(this.getUserEmail);
-            
-            this.addItem({
-                cardExpdate: this.paymentData.expiryDate,
-                cardNumber: this.paymentData.cardNumber,
-                owner: this.getUserEmail,
-                postCode: this.paymentData.pc,
-                cvc: this.paymentData.cvc,
-            });
 
-            this.id = this.getOrdered;
-
-            if (this.id) {
-                this.setTotalyOrder(this.id);
-                this.paymentData.error = "Payment is being processed";
-                this.product = this.getProductList.find(prod => prod.id == this.getOrdered);
-                console.log(this.product);
-
-                if (this.product) {
-                    const db = getFirestore();
-                    const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-                    await updateDoc(docRef, {
-                        orders: arrayUnion({
-                            name: this.product.productName || "",
-                            price: this.product.price || "",
-                            condition: this.product.condition || "",
-                            photoUrls: this.product.photoUrls || "",
-                            description: this.product.description || "",
-                            publisher: this.product.publisher || "",
-                            pNumber: this.product.phoneNumber || "",
-                            email: this.getUserEmail || "",
-                        }),
-                    });
-                    await this.processToMySales();
-                    this.$router.push('/');
-                } else {
-                    console.error("Ordered product not found");
+            if (this.fail == true) {
+                this.errorMessage == "An errr occured while processing yor payment."
+            }
+            else {
+                this.$router.push("/")
+                if(this.getUserEmail == this.product.email){
+                   this.processToMySales() 
                 }
-            } else {
-                console.error("Invalid Order ID: Could not set myOrder");
+                this.processToMyOrders()
             }
         },
-
         async processToMySales() {
-            var email = this.getUserEmail;
-            console.log(email);
-            console.log('====================1111=====');
-            console.log(this.product);
-            try {
-                if (this.product.email == email) {
-                    const db = getFirestore();
-                    const docRef = doc(db, "uFAOS", "S64AWHz74Ua8E4ix9iMk");
-                    console.log("=====================================================");
-                    await updateDoc(docRef, {
-                        sales: arrayUnion({
-                            name: this.product.productName || "",
-                            price: this.product.price || "",
-                            description: this.product.description || "",
-                            region: this.product.region,
-                            photoUrls: this.product.photoUrls || "",
-                            phoneNumber: this.product.phoneNumber || "",
-                            email: email || "",
-                            id: this.id
-                        }),
-                    });
-                } else {
-                    console.error("Product does not include the email or is not an array");
+            this.updateItemInFDB({
+                collectionName: "uFAOS",
+                document: "S64AWHz74Ua8E4ix9iMk",
+                arrayName: "sales",
+                newElement: {
+                    owner: this.owner,
+                    card: this.paymentData.card,
+                    cvc: this.paymentData.cvc,
+                    exp: this.paymentData.exp,
+                    cost: this.product.price,
+                    email: this.getUserEmail,
+                    location: this.product.region,
+                    phone: this.product.phone,
+                    postcode: this.paymentData.postcode,
+                    street: this.paymentData.street,
+                    id: this.product.id,
+                    date: new Date().toLocaleString(),
+                    name: this.product.name,
+                    condition: this.product.condition,
+                    priceCondition: this.product.priceCondition,
+                    images: this.product.images,
+                    category: this.product.category,
                 }
-            } catch (error) {
-                console.error("Error updating sales in Firestore:", error);
-            }
+            })
+        },
+        async processToMyOrders() {
+            this.updateItemInFDB({
+                collectionName: "uFAOS",
+                document: "S64AWHz74Ua8E4ix9iMk",
+                arrayName: "orders",
+                newElement: {
+                    name: this.product.name,
+                    price: this.product.price,
+                    description: this.product.description,
+                    images: this.product.images,
+                    phone: this.product.phone,
+                    publisher: this.getUserName,
+                    location: this.product.location,
+                    region: this.product.region,
+                    category: this.product.category,
+                    condition: this.product.condition,
+                    priceCondition: this.product.priceCondition,
+                    id: this.product.id,
+                    email: this.getUserEmail,
+                    date: new Date().toLocaleString(),
+                }
+            })
         }
     },
 };

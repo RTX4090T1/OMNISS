@@ -58,9 +58,10 @@ const routes = [
     props: true
   },
   {
-    path: "/pay",
+    path: "/pay/:id",
     name: "pay",
-    component: PaymentComponent
+    component: PaymentComponent,
+    props:true
   },
   {
     path: "/ord",
@@ -73,9 +74,10 @@ const routes = [
     component: MySalesComponent
   },
   {
-    path: "/redact",
+    path: "/redact/:ids",
     name: "redact",
-    component: RedactAddsComponent
+    component: RedactAddsComponent,
+    props:true
   },
   {
     path: "/notifications/:id",

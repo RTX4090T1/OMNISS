@@ -29,103 +29,103 @@ export default createStore({
     ukraineOblasts:[
       {
         oblast: "Vinnytsia Oblast",
-        cities: ["Vinnytsia", "Ladyzhyn", "Haisyn", "Zhmerynka", "Khmilnyk", "Bar", "Mohyliv-Podilskyi", "Nemyriv", "Shargorod", "Yampil"]
+        location: ["Vinnytsia", "Ladyzhyn", "Haisyn", "Zhmerynka", "Khmilnyk", "Bar", "Mohyliv-Podilskyi", "Nemyriv", "Shargorod", "Yampil"]
       },
       {
         oblast: "Volyn Oblast",
-        cities: ["Lutsk", "Kovel", "Novovolynsk", "Horokhiv", "Rozhyshche", "Volodymyr-Volynskyi", "Shatsk", "Ustyluh", "Turiysk", "Lyuboml"]
+        location: ["Lutsk", "Kovel", "Novovolynsk", "Horokhiv", "Rozhyshche", "Volodymyr-Volynskyi", "Shatsk", "Ustyluh", "Turiysk", "Lyuboml"]
       },
       {
         oblast: "Dnipropetrovsk Oblast",
-        cities: ["Dnipro", "Kryvyi Rih", "Pavlohrad", "Novomoskovsk", "Kamianets", "Zhovti Vody", "Nikopol", "Synelnykove", "Marhanets", "Petrykivka"]
+        location: ["Dnipro", "Kryvyi Rih", "Pavlohrad", "Novomoskovsk", "Kamianets", "Zhovti Vody", "Nikopol", "Synelnykove", "Marhanets", "Petrykivka"]
       },
       {
         oblast: "Donetsk Oblast",
-        cities: ["Donetsk", "Mariupol", "Sloviansk", "Kramatorsk", "Bakhmut", "Avdiivka", "Selydove", "Vuhledar", "Pokrovsk", "Yasynuvata"]
+        location: ["Donetsk", "Mariupol", "Sloviansk", "Kramatorsk", "Bakhmut", "Avdiivka", "Selydove", "Vuhledar", "Pokrovsk", "Yasynuvata"]
       },
       {
         oblast: "Zhytomyr Oblast",
-        cities: ["Zhytomyr", "Berdychiv", "Korosten", "Malyn", "Novohrad-Volynskyi", "Olevsk", "Pulyny", "Chudniv", "Ovruch", "Andrushivka"]
+        location: ["Zhytomyr", "Berdychiv", "Korosten", "Malyn", "Novohrad-Volynskyi", "Olevsk", "Pulyny", "Chudniv", "Ovruch", "Andrushivka"]
       },
       {
         oblast: "Zakarpattia Oblast",
-        cities: ["Uzhhorod", "Mukachevo", "Khust", "Berehove", "Rakhiv", "Vynohradiv", "Irshava", "Tiachiv", "Svaliava", "Mizhhirya"]
+        location: ["Uzhhorod", "Mukachevo", "Khust", "Berehove", "Rakhiv", "Vynohradiv", "Irshava", "Tiachiv", "Svaliava", "Mizhhirya"]
       },
       {
         oblast: "Zaporizhzhia Oblast",
-        cities: ["Zaporizhzhia", "Melitopol", "Berdyansk", "Enerhodar", "Tokmak", "Vasylivka", "Polohy", "Orikhiv", "Vesele", "Molochansk"]
+        location: ["Zaporizhzhia", "Melitopol", "Berdyansk", "Enerhodar", "Tokmak", "Vasylivka", "Polohy", "Orikhiv", "Vesele", "Molochansk"]
       },
       {
         oblast: "Ivano-Frankivsk Oblast",
-        cities: ["Ivano-Frankivsk", "Kalush", "Kolomyia", "Bolekhiv", "Yaremche", "Dolyna", "Tysmenytsia", "Sniatyn", "Rohatyn", "Horodenka", "Delyatin", "Gonchariv"]
+        location: ["Ivano-Frankivsk", "Kalush", "Kolomyia", "Bolekhiv", "Yaremche", "Dolyna", "Tysmenytsia", "Sniatyn", "Rohatyn", "Horodenka", "Delyatin", "Gonchariv"]
       },
       {
         oblast: "Kyiv Oblast",
-        cities: ["Kyiv", "Bila Tserkva", "Boryspil", "Bucha", "Fastiv", "Vyshhorod", "Irpin", "Brovary", "Pereiaslav", "Obukhiv"]
+        location: ["Kyiv", "Bila Tserkva", "Boryspil", "Bucha", "Fastiv", "Vyshhorod", "Irpin", "Brovary", "Pereiaslav", "Obukhiv"]
       },
       {
         oblast: "Kirovohrad Oblast",
-        cities: ["Kropyvnytskyi", "Oleksandriia", "Svitlovodsk", "Znamyanka", "Dolynska", "Novoukrainka", "Haivoron", "Bobrynets", "Mala Vyska", "Pomichna"]
+        location: ["Kropyvnytskyi", "Oleksandriia", "Svitlovodsk", "Znamyanka", "Dolynska", "Novoukrainka", "Haivoron", "Bobrynets", "Mala Vyska", "Pomichna"]
       },
       {
         oblast: "Luhansk Oblast",
-        cities: ["Luhansk", "Severodonetsk", "Lysychansk", "Rovenky", "Kreminna", "Alchevsk", "Svatove", "Krasnyi Luch", "Pervomaisk", "Stakhanov"]
+        location: ["Luhansk", "Severodonetsk", "Lysychansk", "Rovenky", "Kreminna", "Alchevsk", "Svatove", "Krasnyi Luch", "Pervomaisk", "Stakhanov"]
       },
       {
         oblast: "Lviv Oblast",
-        cities: ["Lviv", "Drohobych", "Chervonohrad", "Stryi", "Truskavets", "Sambir", "Zolochiv", "Yavoriv", "Boryslav", "Mykolaiv"]
+        location: ["Lviv", "Drohobych", "Chervonohrad", "Stryi", "Truskavets", "Sambir", "Zolochiv", "Yavoriv", "Boryslav", "Mykolaiv"]
       },
       {
         oblast: "Mykolaiv Oblast",
-        cities: ["Mykolaiv", "Pervomaisk", "Voznesensk", "Yuzhnoukrainsk", "Nova Odesa", "Ochakiv", "Snigurivka", "Bashtanka", "Bereznivka", "Koblevo"]
+        location: ["Mykolaiv", "Pervomaisk", "Voznesensk", "Yuzhnoukrainsk", "Nova Odesa", "Ochakiv", "Snigurivka", "Bashtanka", "Bereznivka", "Koblevo"]
       },
       {
         oblast: "Odesa Oblast",
-        cities: ["Odesa", "Bilhorod-Dnistrovskyi", "Izmail", "Podilsk", "Chornomorsk", "Yuzhne", "Kiliya", "Bilyayivka", "Balta", "Arcyz"]
+        location: ["Odesa", "Bilhorod-Dnistrovskyi", "Izmail", "Podilsk", "Chornomorsk", "Yuzhne", "Kiliya", "Bilyayivka", "Balta", "Arcyz"]
       },
       {
         oblast: "Poltava Oblast",
-        cities: ["Poltava", "Kremenchuk", "Horishni Plavni", "Lubny", "Myrhorod", "Hadiach", "Karlivka", "Piryatin", "Zinkiv", "Hlobyne"]
+        location: ["Poltava", "Kremenchuk", "Horishni Plavni", "Lubny", "Myrhorod", "Hadiach", "Karlivka", "Piryatin", "Zinkiv", "Hlobyne"]
       },
       {
         oblast: "Rivne Oblast",
-        cities: ["Rivne", "Dubno", "Varash", "Kostopil", "Ostroh", "Sarny", "Zdolbuniv", "Berezne", "Radiviliv", "Rokytne"]
+        location: ["Rivne", "Dubno", "Varash", "Kostopil", "Ostroh", "Sarny", "Zdolbuniv", "Berezne", "Radiviliv", "Rokytne"]
       },
       {
         oblast: "Sumy Oblast",
-        cities: ["Sumy", "Shostka", "Konotop", "Okhtyrka", "Romny", "Putyvl", "Trostianets", "Lebedyn", "Bilopillya", "Hlukhiv"]
+        location: ["Sumy", "Shostka", "Konotop", "Okhtyrka", "Romny", "Putyvl", "Trostianets", "Lebedyn", "Bilopillya", "Hlukhiv"]
       },
       {
         oblast: "Ternopil Oblast",
-        cities: ["Ternopil", "Chortkiv", "Buchach", "Kremenets", "Borshchiv", "Zbarazh", "Shumsk", "Lanivtsi", "Pidvolochysk", "Zalishchyky"]
+        location: ["Ternopil", "Chortkiv", "Buchach", "Kremenets", "Borshchiv", "Zbarazh", "Shumsk", "Lanivtsi", "Pidvolochysk", "Zalishchyky"]
       },
       {
         oblast: "Kharkiv Oblast",
-        cities: ["Kharkiv", "Lozova", "Izium", "Kupiansk", "Merefa", "Lyubotyn", "Pervomaiskyi", "Chuhuiv", "Derhachi", "Balakliia"]
+        location: ["Kharkiv", "Lozova", "Izium", "Kupiansk", "Merefa", "Lyubotyn", "Pervomaiskyi", "Chuhuiv", "Derhachi", "Balakliia"]
       },
       {
         oblast: "Kherson Oblast",
-        cities: ["Kherson", "Nova Kakhovka", "Kakhovka", "Henichesk", "Skadovsk", "Oleshky", "Beryslav", "Velyka Oleksandrivka", "Kalanchak", "Chaplynka"]
+        location: ["Kherson", "Nova Kakhovka", "Kakhovka", "Henichesk", "Skadovsk", "Oleshky", "Beryslav", "Velyka Oleksandrivka", "Kalanchak", "Chaplynka"]
       },
       {
         oblast: "Khmelnytskyi Oblast",
-        cities: ["Khmelnytskyi", "Kamianets-Podilskyi", "Shepetivka", "Starokostiantyniv", "Slavuta", "Polonne", "Dunaivtsi", "Netishyn", "Horodok", "Derazhnia"]
+        location: ["Khmelnytskyi", "Kamianets-Podilskyi", "Shepetivka", "Starokostiantyniv", "Slavuta", "Polonne", "Dunaivtsi", "Netishyn", "Horodok", "Derazhnia"]
       },
       {
         oblast: "Cherkasy Oblast",
-        cities: ["Cherkasy", "Uman", "Smila", "Zolotonosha", "Korsun-Shevchenkivskyi", "Khrystynivka", "Kaniv", "Talne", "Vatutine", "Mankivka"]
+        location: ["Cherkasy", "Uman", "Smila", "Zolotonosha", "Korsun-Shevchenkivskyi", "Khrystynivka", "Kaniv", "Talne", "Vatutine", "Mankivka"]
       },
       {
         oblast: "Chernivtsi Oblast",
-        cities: ["Chernivtsi", "Novoselytsia", "Khotyn", "Sokyriany", "Hertsa", "Vashkivtsi", "Zastavna", "Kelmentsi", "Putyla", "Storozhynets"]
+        location: ["Chernivtsi", "Novoselytsia", "Khotyn", "Sokyriany", "Hertsa", "Vashkivtsi", "Zastavna", "Kelmentsi", "Putyla", "Storozhynets"]
       },
       {
         oblast: "Chernihiv Oblast",
-        cities: ["Chernihiv", "Nizhyn", "Pryluky", "Nosivka", "Bakhmach", "Novhorod-Siverskyi", "Borzna", "Ichnia", "Koryukivka", "Mena"]
+        location: ["Chernihiv", "Nizhyn", "Pryluky", "Nosivka", "Bakhmach", "Novhorod-Siverskyi", "Borzna", "Ichnia", "Koryukivka", "Mena"]
       },
       {
         oblast: "Crimea",
-        cities: ["Simferopol", "Yalta", "Sevastopol", "Kerch", "Feodosia", "Sudak", "Bakhchisaray", "Dzhankoy", "Evpatoria", "Saky"]
+        location: ["Simferopol", "Yalta", "Sevastopol", "Kerch", "Feodosia", "Sudak", "Bakhchisaray", "Dzhankoy", "Evpatoria", "Saky"]
       }
     ],
     ordered: null,

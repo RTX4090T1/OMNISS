@@ -83,5 +83,18 @@ export default {
                 commit('setLoading', false)
             }
         },
+        async updateElementInArray({commit},{collectionName,document, field, newElement}){
+            commit('setError', null)
+            commit('setLoading', true)
+            try {
+                const action = new FDBOperations(collectionName)
+                await action.updateElementInArray(document, field, newElement)
+            } catch (error) {
+                commit('setError', error)
+            } finally {
+                commit('setLoading', false)
+            }
+        }
+        
     },
 }
