@@ -2,7 +2,7 @@
   <div class="main-container text-dark min-vh-100">
     <header class="main-header d-flex justify-content-between align-items-center px-4 py-3 shadow">
       <h1 class="text-primary">Omnis</h1>
-      <span class="text-primary px-4">Where Deals Meet Dreams.</span>
+      <span class="text-primary px-4">Where Deals Meet Success.</span>
       <div class="search-section d-flex justify-content-center align-items-center my-3 px-5">
         <form label-for="search" label="Find">
           <input type="text" id="search" v-model="searchString" placeholder="Omnis..."
@@ -88,16 +88,10 @@
               <p class="card-text text-muted">{{ item.description }}</p>
               <h6 class="text-primary">${{ item.price }}</h6>
               <p class="text-muted small">{{ item.region }}</p>
-
-              <!-- Only show NotificationsComponent for the selected product -->
-              <notifications-component v-if="onOff && id === item.id" :id="id"
-                :userEmail="email"></notifications-component>
-
               <div class="d-flex justify-content-between align-items-center">
                 <button class="btn btn-outline-primary btn-sm" @click="addToFavoritesid(item.id)">Add to
                   Favorites</button>
                 <div class="d-flex gap-2">
-                  <button :id="item.id" class="btn btn-primary btn-sm" @click="onOFF(item.id, item.email)">Chat</button>
                   <router-link :to="{ name: 'prodCard', params: { id: item.id } }"
                     class="btn btn-primary btn-sm">View</router-link>
                 </div>
@@ -112,13 +106,11 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import NotificationsComponent from './NotificationsComponent.vue';
+
 
 export default {
   name: "MainComponent",
-  components: {
-    NotificationsComponent
-  },
+
   data() {
     return {
       id: null,

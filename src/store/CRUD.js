@@ -31,7 +31,7 @@ export default {
                 commit('setLoading', false)
             }
         },
-        async updateDocumentInFDB({ commit }, document, newElement, collectionName, data) {
+        async updateDocumentInFDB({ commit }, {document, newElement, collectionName, data}) {
             commit('setError', null)
             commit('setLoading', true)
             try {

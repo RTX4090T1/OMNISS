@@ -71,6 +71,8 @@ export default {
     methods: {
       ...mapActions('PRODUCT_STORE',['getItemFromFDB']),
         async showMyItems() {
+          console.log(this.getUserEmail);
+          
             try {
               let items = await this.getItemFromFDB( {collectionName:"uFAOS", document:"S64AWHz74Ua8E4ix9iMk", elementName:"orders"})
               this.myOrders = items.filter(item => item.email == this.getUserEmail)

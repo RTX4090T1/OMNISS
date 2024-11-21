@@ -23,8 +23,6 @@
             </div>
         </header>
 
-
-
         <div class="container mt-5">
             <form @submit.prevent="processPayment" class="card p-4 shadow-sm">
                 <div class="mb-3">
@@ -166,8 +164,10 @@ export default {
                     elementName: 'store'
                 })
                 this.product = selected.find(item => item.id == this.id)
+                console.log(this.getUserEmail+"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+                console.log(this.product.email + "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
 
-                this.updateItemInFDB({
+                await this.updateItemInFDB({
                     collectionName: "paymentHistory",
                     document: "E7vayXDEfba6LKaMctS0",
                     arrayName: "payments",
@@ -186,35 +186,33 @@ export default {
                         date: new Date().toLocaleString()
                     }
                 })
+                if (this.fail == true) {
+                    this.errorMessage == "An errr occured while processing yor payment."
+                }
+                else {
+                    this.$router.push("/")
+                    if (this.getUserEmail == this.product.email) {
+                        this.processToMySales()
+                    }
+                    this.processToMyOrders()
+                }
             } catch (fail) {
                 this.fail = true
             }
-
-
-            if (this.fail == true) {
-                this.errorMessage == "An errr occured while processing yor payment."
-            }
-            else {
-                this.$router.push("/")
-                if(this.getUserEmail == this.product.email){
-                   this.processToMySales() 
-                }
-                this.processToMyOrders()
-            }
         },
         async processToMySales() {
-            this.updateItemInFDB({
+            await this.updateItemInFDB({
                 collectionName: "uFAOS",
                 document: "S64AWHz74Ua8E4ix9iMk",
                 arrayName: "sales",
                 newElement: {
-                    owner: this.owner,
+                    owner: this.getUserName,
                     card: this.paymentData.card,
                     cvc: this.paymentData.cvc,
                     exp: this.paymentData.exp,
                     cost: this.product.price,
                     email: this.getUserEmail,
-                    location: this.product.region,
+                    location: this.product.location,
                     phone: this.product.phone,
                     postcode: this.paymentData.postcode,
                     street: this.paymentData.street,
@@ -229,7 +227,7 @@ export default {
             })
         },
         async processToMyOrders() {
-            this.updateItemInFDB({
+            await this.updateItemInFDB({
                 collectionName: "uFAOS",
                 document: "S64AWHz74Ua8E4ix9iMk",
                 arrayName: "orders",
@@ -251,8 +249,8 @@ export default {
                 }
             })
         }
-    },
-};
+    }
+}
 </script>
 
 

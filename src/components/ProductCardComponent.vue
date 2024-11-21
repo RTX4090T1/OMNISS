@@ -54,6 +54,7 @@
       <p class="card-text publisher-phone">Publisher Phone: {{ selectedProduct.phone }}</p>
       <p class="card-text description">Description: {{ selectedProduct.description }}</p>
       <router-link  :to="{ name: 'pay', params: { id: id }}" class="btn btn-primary w-100">Order</router-link>
+      <router-link :id="selectedProduct.id" class="btn btn-primary w-100" :to="{name: 'notifications', params: {id: id}}">Chat</router-link>
       <button @click="addToFavorites" class="btn btn-outline-secondary w-100 mt-2">Add to Favorites</button>
     </div>
   </div>

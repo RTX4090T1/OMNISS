@@ -24,9 +24,9 @@
     </header>
 
     <div class="container mt-5">
-      <div v-if="myOrders.length > 0">
+      <div v-if="mySales.length > 0">
         <div class="row">
-          <div class="col-md-4" v-for="(item, index) in myOrders" :key="index">
+          <div class="col-md-4" v-for="(item, index) in mySales" :key="index">
             <div class="card text-white mb-3">
               <div class="card-img-top">
                 <!-- Display the first image in the item.photos array -->
@@ -60,8 +60,8 @@ export default {
     name: "MySalesComponent",
     data() {
         return {
-            id: "",
-            myOrders: [],
+
+            mySales: [],
         };
     },
     computed: {
@@ -72,8 +72,11 @@ export default {
       ...mapActions('PRODUCT_STORE',['getItemFromFDB']),
         async showMyItems() {
             try {
+              console.log("Fetching items for user:", this.getUserEmail);
               let items = await this.getItemFromFDB( {collectionName:"uFAOS", document:"S64AWHz74Ua8E4ix9iMk", elementName:"sales"})
-              this.myOrders = items.filter(item => item.email == this.getUserEmail)
+              console.log("Fetched items:", items);
+              this.mySales = items.filter(item => item.email == this.getUserEmail)
+              console.log("Filtered orders:", this.mySales);
             } catch (error) {
                 console.error("Error fetching document:", error);
             }
