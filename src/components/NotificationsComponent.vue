@@ -6,7 +6,7 @@
         {{ msg.message }}
       </span>
     </div>
-    <form @submit.prevent="messeging" class="form-container">
+    <form @submit.prevent="messaging" class="form-container">
       <input type="text" v-model="message" placeholder="Type your message..." class="message-input" />
       <button type="submit" class="send-button">Send</button>
     </form>
@@ -34,44 +34,45 @@ export default {
 
   },
   methods: {
-    ...mapActions('PRODUCT_STORE', ['getItemFromFDB','updateItemInFDB','updateDocumentInFDB']),
+    ...mapActions('PRODUCT_STORE', ['getItemFromFDB','updateItemInFDB','updateDocumentInFDB','getDocumentFromFDB']),
 
     async createID() {
       let items = await this.getItemFromFDB({collectionName:"PRODUCT_STORE", document:"qnmnilljBNJsRawRgdeU", elementName:"store"})
-      this.item = items.filter(el => el.id == this.id)
-      this.uid = String(this.item.email) + String(this.id) + String(this.getUserEmail)
-    },
-    async checkBefor(){
+      this.item = items.find(el => el.id == this.id)
       this.email = this.getUserEmail
       console.log(this.email);
-      
-      this.createID()
-      let items = await this.getItemFromFDB({collectionName:"PRODUCT_STORE", document:"qnmnilljBNJsRawRgdeU", elementName:"store"})
-      if(!(items.includes(this.uid))){
+      this.uid = String(this.item.email) + String(this.id) + String(this.email)
+    },
+    async checkBefore(){
+      await this.createID()
+      console.log(this.email);
+      let items = await this.getDocumentFromFDB({collectionName:'messenger', document:'qYmC5hhIWrJP7rh22bc0' })
+      if(!(items.find(el => el.id == this.uid))){
         this.conversation = {
           date: new Date().toLocaleString(),
-          email: this.getUserEmail,
+          email: this.email,
           id: this.uid,
           message: null
         }
         await this.updateDocumentInFDB({document:'qYmC5hhIWrJP7rh22bc0', newElement:this.uid, collectionName:'messenger' , data:this.conversation})
       }
-      if(items.includes(this.uid)){
-        this.conversation = await this.getItemFromFDB( {collectionName:'messenger', document:'qYmC5hhIWrJP7rh22bc0', arrayName:this.uid})
+      else{
+        this.conversation = await this.getItemFromFDB( {collectionName:'messenger', document:'qYmC5hhIWrJP7rh22bc0', elementName:this.uid})
       }
     },
-    async messeging(){
+    async messaging(){
       let message = {
         date: new Date().toLocaleString(),
-        email: this.getUserEmail,
+        email: this.email,
         id: this.uid,
         message: this.message
       }
       await this.updateItemInFDB({collectionName:'messenger', document:'qYmC5hhIWrJP7rh22bc0', arrayName:this.uid, newElement:message})
+      this.message = '';
     }
   },
   created(){
-    this.checkBefor()
+     this.checkBefore()
   }
 
   
