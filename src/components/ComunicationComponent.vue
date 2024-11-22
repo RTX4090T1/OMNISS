@@ -9,7 +9,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { getFirestore, doc, getDoc } from "firebase/firestore";
 import NotificationsComponent from './NotificationsComponent.vue';
 
 export default {
@@ -31,27 +30,8 @@ export default {
   },
   methods: {
     async checkBefor() {
-      this.email = this.getUserEmail;
-      try {
-        const db = getFirestore();
-        const docRef = doc(db, "messenger", "qYmC5hhIWrJP7rh22bc0");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const arrayData = docSnap.data();
-          this.data = arrayData;
-          this.anotherEmail = Object.keys(arrayData)
-            .filter(key => key.includes(this.email))
-            .map(key => ({ id: key, email: arrayData[key][0].email }));
-        } else {
-          console.error("No such document!");
-        }
-      } catch (error) {
-        console.error("Error fetching document:", error);
-      }
+     
     },
-    loadConversation(id) {
-      this.ids = id;
-    }
   },
   created() {
     this.checkBefor();
@@ -59,6 +39,3 @@ export default {
 };
 </script>
 
-<style scoped>
-/* Add your styles here */
-</style>

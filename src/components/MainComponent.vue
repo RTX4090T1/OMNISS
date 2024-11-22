@@ -1,5 +1,6 @@
 <template>
   <div class="main-container text-dark min-vh-100">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <header class="main-header d-flex justify-content-between align-items-center px-4 py-3 shadow">
       <h1 class="text-primary">Omnis</h1>
       <span class="text-primary px-4">Where Deals Meet Success.</span>
@@ -9,6 +10,9 @@
             class="form-control search-input">
         </form>
       </div>
+      
+      <router-link to="/comunicate" class="text-decoration-none text-dark fw-bold" ><i class="fa-solid fa-bell text-primary" style="color:blue;"></i></router-link>
+      
       <div class="dropdown ms-auto">
         <button class="btn btn-light dropdown-toggle" type="button" id="setting" data-bs-toggle="dropdown"
           aria-expanded="false">
@@ -77,8 +81,15 @@
         </div>
       </div>
     </div>
-
-    <div class="product-list container py-3">
+    <div v-if="!getUserEmail" class="safety-message bg-light text-center p-4 my-5 mx-auto rounded shadow">
+      <p class="text-primary fs-5 mb-3">
+        Your safety is our priority, and we continuously monitor for fraudulent activity. To continue using the service,
+        please
+        <router-link to="/login" class="text-decoration-none text-dark fw-bold">register or log in</router-link>.
+        If you encounter any issues, feel free to contact us via chat!
+      </p>
+    </div>
+    <div v-if="getUserEmail" class="product-list container py-3">
       <div class="row">
         <div class="col-md-4 mb-4" v-for="(item, index) in filteredItems" :key="index">
           <div class="card product-card shadow-sm border-0">
@@ -113,6 +124,7 @@ export default {
 
   data() {
     return {
+      caseMessage: "Your safety is our priority, and we continuously monitor for fraudulent activity. To continue using the service, please register or log in. If you encounter any issues, feel free to contact us via chat!",
       id: null,
       email: null,
       onOff: false,
@@ -135,15 +147,19 @@ export default {
     ...mapGetters(['getLocation']),
     filteredItems() {
       console.log('this.items:', this.items);
-      return this.items.filter(item => {
-        const matchesSearch = !this.searchString || item.name.toLowerCase().includes(this.searchString.toLowerCase());
-        const matchesLocation = !this.selectedRegion || item.region === this.selectedRegion;
-        const matchesCity = !this.city || item.location === this.city;
-        const matchesCondition = this.selectedCondition === "all" || !this.selectedCondition || item.condition === this.selectedCondition;
-        const matchesPrice = (!this.minPrice || item.price >= this.minPrice) && (!this.maxPrice || item.price <= this.maxPrice);
-        const matchesCategory = !this.selectedCategory || item.category === this.selectedCategory;
-        return matchesSearch && matchesLocation && matchesCity && matchesCondition && matchesPrice && matchesCategory;
-      });
+      if (this.getUserEmail) {
+        return this.items.filter(item => {
+          const matchesSearch = !this.searchString || item.name.toLowerCase().includes(this.searchString.toLowerCase());
+          const matchesLocation = !this.selectedRegion || item.region === this.selectedRegion;
+          const matchesCity = !this.city || item.location === this.city;
+          const matchesCondition = this.selectedCondition === "all" || !this.selectedCondition || item.condition === this.selectedCondition;
+          const matchesPrice = (!this.minPrice || item.price >= this.minPrice) && (!this.maxPrice || item.price <= this.maxPrice);
+          const matchesCategory = !this.selectedCategory || item.category === this.selectedCategory;
+          return matchesSearch && matchesLocation && matchesCity && matchesCondition && matchesPrice && matchesCategory;
+        });
+      } else {
+        return this.caseMessage
+      }
     }
   },
 

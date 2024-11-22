@@ -1,10 +1,11 @@
 <template>
   <div class="container">
-    <div v-for="(msg, index) in conversation" :key="index" class="message-container">
-      <span :class="{ 'element-right': email === msg.email, 'element-left': email !== msg.email }"
-        class="message">
-        {{ msg.message }}
-      </span>
+    <div v-for="(msg, index) in conversation" :key="index" class="message-container" style="height:700px">
+      <div v-for="(m, index) in msg" :key="index" class="message-block my-3">
+        <span :class="{ 'element-left': email === m.email, 'element-right': email !== m.email }" class="message">
+          {{ m.message }}
+        </span>
+      </div>
     </div>
     <form @submit.prevent="messaging" class="form-container">
       <input type="text" v-model="message" placeholder="Type your message..." class="message-input" />
@@ -16,7 +17,6 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 
-
 export default {
   name: "NotificationsComponent",
   props: ['id'],
@@ -25,57 +25,57 @@ export default {
       message: null,
       conversation: [],
       item: null,
-      uid:null,
-      email:""
+      uid: "",
+      email: ""
     };
   },
   computed: {
     ...mapGetters('auth', ['getUserEmail']),
-
   },
   methods: {
-    ...mapActions('PRODUCT_STORE', ['getItemFromFDB','updateItemInFDB','updateDocumentInFDB','getDocumentFromFDB']),
-
+    ...mapActions('PRODUCT_STORE', ['getItemFromFDB', 'updateItemInFDB', 'updateDocumentInFDB', 'getDocumentFromFDB']),
     async createID() {
-      let items = await this.getItemFromFDB({collectionName:"PRODUCT_STORE", document:"qnmnilljBNJsRawRgdeU", elementName:"store"})
-      this.item = items.find(el => el.id == this.id)
-      this.email = this.getUserEmail
-      console.log(this.email);
-      this.uid = String(this.item.email) + String(this.id) + String(this.email)
+      let items = await this.getItemFromFDB({ collectionName: "PRODUCT_STORE", document: "qnmnilljBNJsRawRgdeU", elementName: "store" });
+      this.item = items.find(el => el.id == this.id);
+      this.email = this.getUserEmail;
+      this.uid = String(this.item.email + this.id + this.email).replace(/\./g, "");
     },
-    async checkBefore(){
-      await this.createID()
-      console.log(this.email);
-      let items = await this.getDocumentFromFDB({collectionName:'messenger', document:'qYmC5hhIWrJP7rh22bc0' })
-      if(!(items.find(el => el.id == this.uid))){
-        this.conversation = {
+    async checkBefore() {
+      await this.createID();
+      let itemsList = await this.getDocumentFromFDB({ collectionName: 'messenger', document: 'qYmC5hhIWrJP7rh22bc0' });
+      itemsList = Object.values(itemsList);
+
+      if (!Object.keys(itemsList).includes(this.uid)) {
+        this.update();
+      } else {
+        this.conversation.push({
           date: new Date().toLocaleString(),
           email: this.email,
           id: this.uid,
-          message: null
-        }
-        await this.updateDocumentInFDB({document:'qYmC5hhIWrJP7rh22bc0', newElement:this.uid, collectionName:'messenger' , data:this.conversation})
-      }
-      else{
-        this.conversation = await this.getItemFromFDB( {collectionName:'messenger', document:'qYmC5hhIWrJP7rh22bc0', elementName:this.uid})
+          message: null,
+        });
+        await this.updateDocumentInFDB({ document: 'qYmC5hhIWrJP7rh22bc0', newElement: this.uid, collectionName: 'messenger', data: this.conversation });
       }
     },
-    async messaging(){
+    async messaging() {
       let message = {
         date: new Date().toLocaleString(),
         email: this.email,
         id: this.uid,
         message: this.message
-      }
-      await this.updateItemInFDB({collectionName:'messenger', document:'qYmC5hhIWrJP7rh22bc0', arrayName:this.uid, newElement:message})
+      };
+      await this.updateItemInFDB({ collectionName: 'messenger', document: 'qYmC5hhIWrJP7rh22bc0', arrayName: this.uid, newElement: message });
+      this.update();
       this.message = '';
+    },
+    async update() {
+      this.conversation = [];
+      this.conversation.push(await this.getItemFromFDB({ collectionName: 'messenger', document: 'qYmC5hhIWrJP7rh22bc0', elementName: this.uid }));
     }
   },
-  created(){
-     this.checkBefore()
+  created() {
+    this.checkBefore();
   }
-
-  
 };
 </script>
 
@@ -92,8 +92,13 @@ export default {
 .message-container {
   margin-bottom: 10px;
   display: flex;
-  justify-content: space-between;
-  padding: 5px 0;
+  flex-direction: column;
+  height: 500px; /* Set a fixed height for the container */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.message-block {
+  margin-bottom: 5px;
 }
 
 .message {

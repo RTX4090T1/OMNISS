@@ -1,7 +1,7 @@
 <template>
   <div class="main-back-color min-vh-100 d-flex justify-content-center align-items-center">
     <div class="card profile-card p-4 rounded shadow-lg text-center">
-      
+
       <div class="profile-section mb-3">
         <div class="profile-picture rounded-circle mx-auto d-flex align-items-center justify-content-center">
           <img src="https://via.placeholder.com/140" alt="Profile Picture" class="rounded-circle img-fluid" />
@@ -27,15 +27,18 @@
         <router-link class="list-group-item list-group-item-action text-center fs-5" to="/favorites">
           <i class="bi bi-heart me-2"></i> Favorites
         </router-link>
+        <router-link class="list-group-item list-group-item-action text-center fs-5" to="/comunications">
+          <i class="bi bi-heart me-2"></i> Notifications
+        </router-link>
         <router-link class="list-group-item list-group-item-action text-center fs-5" to="/addApplication">
           <i class="bi bi-plus-circle me-2"></i> Publish New Ad
         </router-link>
       </div>
-      
+
       <button @click="signOut" class="btn btn-primary w-100 mb-3">
         <i class="bi bi-box-arrow-right me-2"></i> Sign Out
       </button>
-      
+
       <router-link class="btn btn-outline-primary w-100" to="/">
         <i class="bi bi-house me-2"></i> Home
       </router-link>
@@ -60,7 +63,6 @@ export default {
 </script>
 
 <style scoped>
-
 .main-back-color {
   background-color: #f0f2f5;
 }

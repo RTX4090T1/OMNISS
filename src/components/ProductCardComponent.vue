@@ -2,8 +2,13 @@
   <header class="main-header d-flex justify-content-between align-items-center px-4 py-3 shadow">
     <h1 class="text-primary">Omnis</h1>
     <div class="dropdown ms-auto">
-      <button class="btn btn-light dropdown-toggle" type="button" id="setting" data-bs-toggle="dropdown"
-        aria-expanded="false">
+      <button
+        class="btn btn-light dropdown-toggle"
+        type="button"
+        id="setting"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
         Options
       </button>
       <ul class="dropdown-menu" aria-labelledby="setting">
@@ -20,75 +25,102 @@
         </li>
       </ul>
     </div>
-
   </header>
 
-  <div v-if="selectedProduct" class="product-card card mb-4 shadow-sm mx-auto">
-    <div :id="'carousel-' + selectedProduct.id" class="carousel slide" data-bs-ride="carousel">
-      <div class="carousel-inner">
-        <div class="carousel-item" :class="{ active: i === 0 }" v-for="(photo, i) in selectedProduct.images" :key="i">
-          <img :src="photo" class="d-block w-100" alt="Product Image">
+  <!-- Wrapper to contain both product card and dialog -->
+  <div class="product-wrapper">
+    <!-- Product Card -->
+    <div v-if="selectedProduct" class="product-card card mb-4 shadow-sm">
+      <div :id="'carousel-' + selectedProduct.id" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <div
+            class="carousel-item"
+            :class="{ active: i === 0 }"
+            v-for="(photo, i) in selectedProduct.images"
+            :key="i"
+          >
+            <img :src="photo" class="d-block w-100" alt="Product Image" />
+          </div>
         </div>
+        <button
+          class="carousel-control-prev"
+          type="button"
+          :data-bs-target="'#carousel-' + selectedProduct.id"
+          data-bs-slide="prev"
+        >
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button
+          class="carousel-control-next"
+          type="button"
+          :data-bs-target="'#carousel-' + selectedProduct.id"
+          data-bs-slide="next"
+        >
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
       </div>
-      <button class="carousel-control-prev" type="button" :data-bs-target="'#carousel-' + selectedProduct.id"
-        data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-      </button>
-      <button class="carousel-control-next" type="button" :data-bs-target="'#carousel-' + selectedProduct.id"
-        data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-      </button>
+
+      <div class="card-body text-center">
+        <h3 class="card-title product-name">{{ selectedProduct.name }}</h3>
+        <div class="product-details d-flex justify-content-between">
+          <p class="price">Price: {{ selectedProduct.price }}</p>
+          <p class="condition">Condition: {{ selectedProduct.condition }}</p>
+          <p class="price-condition">Price Condition: {{ selectedProduct.priceCondition }}</p>
+        </div>
+        <p class="card-text location">Location: {{ selectedProduct.region }}</p>
+        <p class="card-text publisher">Publisher: {{ selectedProduct.publisher }}</p>
+        <p class="card-text publisher-phone">Publisher Phone: {{ selectedProduct.phone }}</p>
+        <p class="card-text description">Description: {{ selectedProduct.description }}</p>
+        <router-link :to="{ name: 'pay', params: { id: id }}" class="btn btn-primary w-100">Order</router-link>
+        <button v-if="chatCheck()" @click="chatOnOff" class="btn btn-secondary w-100 mt-2">Chat</button>
+        <button @click="addToFavorites" class="btn btn-outline-secondary w-100 mt-2">Add to Favorites</button>
+      </div>
     </div>
 
-    <div class="card-body text-center">
-      <h3 class="card-title product-name">{{ selectedProduct.name }}</h3>
-      <div class="product-details d-flex justify-content-between">
-        <p class="price">Price: {{ selectedProduct.price }}</p>
-        <p class="condition">Condition: {{ selectedProduct.condition }}</p>
-        <p class="price-condition">Price Condition: {{ selectedProduct.priceCondition }}</p>
-      </div>
-      <p class="card-text location">Location: {{ selectedProduct.region }}</p>
-      <p class="card-text publisher">Publisher: {{ selectedProduct.publisher }}</p>
-      <p class="card-text publisher-phone">Publisher Phone: {{ selectedProduct.phone }}</p>
-      <p class="card-text description">Description: {{ selectedProduct.description }}</p>
-      <router-link  :to="{ name: 'pay', params: { id: id }}" class="btn btn-primary w-100">Order</router-link>
-      <router-link :id="selectedProduct.id" class="btn btn-primary w-100" :to="{name: 'notifications', params: {id: id}}">Chat</router-link>
-      <button @click="addToFavorites" class="btn btn-outline-secondary w-100 mt-2">Add to Favorites</button>
-    </div>
+    <notifications-component v-if="onOff" :id="id" class="notifications-component"></notifications-component>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import NotificationsComponent from './NotificationsComponent.vue';
 
 export default {
-  name: "ProductCardComponent",
+  name: 'ProductCardComponent',
+  components: {
+    NotificationsComponent,
+  },
   props: ['id'],
   data() {
     return {
       selectedProduct: null,
-      photos: []
+      photos: [],
+      onOff: false,
     };
   },
   computed: {
     ...mapGetters('auth', ['getUserName', 'getUserEmail']),
   },
   methods: {
-    ...mapActions('PRODUCT_STORE', ['getItemFromFDB','updateItemInFDB']),
+    ...mapActions('PRODUCT_STORE', ['getItemFromFDB', 'updateItemInFDB']),
 
     async loadProduct() {
       var selected = await this.getItemFromFDB({
         collectionName: 'PRODUCT_STORE',
         document: 'qnmnilljBNJsRawRgdeU',
-        elementName: 'store'
-      })
-      this.selectedProduct = selected.find(item => item.id == this.id)
+        elementName: 'store',
+      });
+      this.selectedProduct = selected.find((item) => item.id == this.id);
+
+      // Ensure email exists in selectedProduct
+      if (!this.selectedProduct.email) {
+        this.selectedProduct.email = ''; // Or assign the correct email if available
+      }
     },
 
     async addToFavorites() {
-      
       var favorite = {
         name: this.selectedProduct.name,
         price: this.selectedProduct.price,
@@ -103,36 +135,65 @@ export default {
         priceCondition: this.selectedProduct.priceCondition,
         id: this.selectedProduct.id,
         email: this.getUserEmail,
-      }
-      this.updateItemInFDB({
-        collectionName: "uFAOS",
-        document: "S64AWHz74Ua8E4ix9iMk",
-        arrayName: "favorites",
-        newElement: favorite
-      })
+      };
+      await this.updateItemInFDB({
+        collectionName: 'uFAOS',
+        document: 'S64AWHz74Ua8E4ix9iMk',
+        arrayName: 'favorites',
+        newElement: favorite,
+      });
     },
 
     signOut() {
       this.$store.commit('auth/CLEAR_USER_DATA');
       this.$router.push('/');
     },
+    chatOnOff() {
+      this.onOff = !this.onOff;
+    },
+    chatCheck() {
+      return (
+        this.selectedProduct &&
+        this.getUserEmail &&
+        this.selectedProduct.email !== this.getUserEmail
+      );
+    },
   },
   created() {
     this.loadProduct();
-  }
+  },
 };
 </script>
 
 <style scoped>
+.product-wrapper {
+  position: relative;
+  max-width: 700px;
+  margin: 20px auto;
+}
+
 .product-card {
+  position: relative;
+  z-index: 1;
   max-width: 700px;
   width: 100%;
   border-radius: 8px;
   border: 1px solid #f0f0f0;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  margin: 20px auto;
   background-color: #fff;
+}
+
+.notifications-component {
+  position: absolute;
+  top: 0;
+  right: -320px; /* Adjust this value based on the width of the dialog */
+  width: 300px; /* Set the desired width for the dialog */
+  z-index: 2;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 8px;
 }
 
 .card-body {
@@ -201,5 +262,17 @@ export default {
 
 .btn {
   margin-top: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .notifications-component {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+  }
 }
 </style>

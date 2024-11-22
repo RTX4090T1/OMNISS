@@ -24,18 +24,24 @@ class FDBOperations {
 
     async getDocumentFromFDB(document) {
         try {
-            const docRef = doc(this.dbCollection, document)
-            const docSnap = await getDoc(docRef)
+            console.log('Fetching document from Firestore:', document);
+            const docRef = doc(this.dbCollection, document);
+            console.log('Document reference created:', docRef);
+            const docSnap = await getDoc(docRef);
+            console.log('Document snapshot received:', docSnap);
+    
             if (docSnap.exists()) {
-                const docData = docSnap.data() || {}
-                console.log(docData)
-
-                return docData
+                const docData = docSnap.data() || {};
+                console.log('Document data:', docData);
+    
+                return docData;
             } else {
-                console.error('No such document!')
+                console.error('No such document!');
+                return {};
             }
         } catch (error) {
-            console.error('Error fetching document:', error)
+            console.error('Error fetching document:', error);
+            return {};
         }
     }
 
