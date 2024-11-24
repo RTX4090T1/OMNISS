@@ -89,7 +89,6 @@ const routes = [
     path: "/comunicate",
     name: "comunicate",
     component: ComunicationComponent,
-    props:true
   }
 
 

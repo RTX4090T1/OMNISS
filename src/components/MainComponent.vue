@@ -155,7 +155,7 @@ export default {
           const matchesCondition = this.selectedCondition === "all" || !this.selectedCondition || item.condition === this.selectedCondition;
           const matchesPrice = (!this.minPrice || item.price >= this.minPrice) && (!this.maxPrice || item.price <= this.maxPrice);
           const matchesCategory = !this.selectedCategory || item.category === this.selectedCategory;
-          return matchesSearch && matchesLocation && matchesCity && matchesCondition && matchesPrice && matchesCategory;
+          return matchesSearch && matchesLocation && matchesCity && matchesCondition && matchesPrice && matchesCategory && this.items;
         });
       } else {
         return this.caseMessage
